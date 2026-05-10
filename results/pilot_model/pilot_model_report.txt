@@ -1,0 +1,24 @@
+Dataset: /Volumes/MyHDD/bayesian-brain-morphometry/data/derivatives/features/updated_model_dataset.csv
+Rows: 30
+Classes: ['CONTROL', 'DEMENTIA', 'EPILEPSY']
+Feature columns: ['voxel_volume_mm3', 'brain_volume_ml', 'csf_volume_ml', 'gm_volume_ml', 'wm_volume_ml', 'tissue_sum_volume_ml', 'tissue_balance_ml', 'brain_mean_intensity', 'brain_std_intensity', 'brain_median_intensity', 'brain_min_intensity', 'brain_max_intensity']
+
+Class counts:
+  CONTROL: 12
+  EPILEPSY: 10
+  DEMENTIA: 8
+
+Cross-validated accuracy: 0.9333
+Cross-validated balanced accuracy: 0.9250
+
+Classification report:
+              precision    recall  f1-score   support
+
+     CONTROL     0.9231    1.0000    0.9600        12
+    DEMENTIA     1.0000    0.8750    0.9333         8
+    EPILEPSY     0.9000    0.9000    0.9000        10
+
+    accuracy                         0.9333        30
+   macro avg     0.9410    0.9250    0.9311        30
+weighted avg     0.9359    0.9333    0.9329        30
+

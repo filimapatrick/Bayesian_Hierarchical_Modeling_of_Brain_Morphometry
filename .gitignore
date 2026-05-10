@@ -4,7 +4,16 @@ __pycache__/
 data/raw/
 data/bids/
 data/derivatives/
+**/dicom/**
+**/nifti/**
+*.dcm
+*.DCM
+*.ima
+*.IMA
+*.nii
+*.nii.gz
 .DS_Store
+._*
 .venv/
 venv/
 .ipynb_checkpoints/
