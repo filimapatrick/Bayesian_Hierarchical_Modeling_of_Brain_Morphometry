@@ -21,3 +21,9 @@ venv/
 .vscode/
 *.log
 *.csv
+!results/tables/*.csv
+results/traces/
+**/._*
+data/bids_test/
+data/bids_test2/
+.autobidsify_session
