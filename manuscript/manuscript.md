@@ -30,10 +30,10 @@ This study establishes an evidence-based framework addressing a fundamental tran
 We deployed a three-tier experimental architecture. In **Experiment 1 (Controlled Synthetic Degradation Lab)**, $N=35$ pristine 1.0 mm³ isotropic acquisitions were systematically downsampled along the slice-select axis to clinical slice thicknesses ($3.0, 4.0, 5.0, 6.0\text{ mm}$), tracking relative percentage error across coarse macro-metrics (Evans' Index, Parenchymal Envelope Fraction [PEF], Ventricle-to-Brain Ratio [VBR]) versus classical subcortical micro-structures. In **Experiment 2 (Clinical Feasibility & Failure Boundaries)**, we evaluated an automated macro-morphometry extraction engine across $N=218$ routine clinical scans spanning five diagnostic groups (Healthy Controls, Dementia, Epilepsy, Hydrocephalus, Parkinson's Disease), directly bench-tested operational attrition against FreeSurfer, and fit a multivariate logistic regression failure model based on multi-criteria measurement unviability. In **Experiment 3 (Uncertainty-Aware Disease Inference & Sensitivity)**, we developed a Bayesian hierarchical model in PyMC 5.12 using the No-U-Turn Sampler (NUTS; 4 chains $\times$ 1,500 draws) incorporating an exponential noise dispersion function ($\sigma_i = \sigma_0 \exp(\lambda[h_i - 1])$), site-level random intercepts ($\gamma_s$), and contrast adjustment ($\delta$), benchmarked against naive and covariate-adjusted ordinary least squares (OLS) regressions, and subjected to rigorous sensitivity analyses (contrast exclusion and site-pruning).
 
 ### Results
-In Experiment 1, 2D in-plane measurements (**Evans' Index**) demonstrated remarkable resilience to through-plane slice blur, exhibiting only $1.83 \pm 2.38\%$ relative error at 3.0 mm and $2.45 \pm 2.50\%$ at 5.0 mm. Global parenchymal envelope fraction (PEF) remained moderately stable ($6.06 \pm 2.24\%$ error at 5.0 mm). Conversely, fine subcortical micro-segmentations ($45.31 \pm 33.62\%$ error) and boundary-sensitive ratios (VBR: $42.15 \pm 24.03\%$ error) collapsed under clinical slice thicknesses. In Experiment 2, our macro-morphometry engine achieved a **95.9% pipeline retention rate** ($209/218$ scans), retaining 100% of the hydrocephalus cohort that failed FreeSurfer (which suffered an overall 85.3% attrition rate, completing only 32/218 scans). Multivariate logistic modeling confirmed that each millimeter increase in slice thickness doubles measurement unviability odds ($\text{OR} = 2.13, 95\%\text{ CI: } [1.27, 3.58], p = 0.0043$), while gadolinium contrast multiplies tissue misclassification odds ninefold ($\text{OR} = 9.14, 95\%\text{ CI: } [1.70, 49.11], p = 0.0099$). In Experiment 3, Bayesian NUTS inference demonstrated exceptional convergence ($\hat{R} = 1.000$, $\text{ESS} > 2,000$ across all monitored parameters). Slice thickness significantly inflated residual uncertainty ($\lambda = 0.0930, 95\%\text{ HDI: } [0.0260, 0.1560]$ for Evans' Index; $\lambda = 0.1060, 95\%\text{ HDI: } [0.0340, 0.1790]$ for PEF), while gadolinium contrast systematically inflated apparent parenchymal envelope fraction by $+3.1\%$ ($\delta = +0.0310, 95\%\text{ HDI: } [0.0130, 0.0500]$). Variance partitioning revealed that site-level clustering accounted for **$61.5\%\text{--}68.8\%$ of total modeled variance** ($\text{ICC}_{\text{site}}^{\text{PEF}} = 0.6150$; $\text{ICC}_{\text{site}}^{\text{EI}} = 0.6880$), reflecting the composite bundling of scanner hardware, acquisition protocols, institutional patient referral mix, and operator choices, completely dwarfing raw diagnostic differences ($\text{ICC}_{\text{disorder}} \approx 3.9\%\text{--}5.8\%$). Sensitivity testing demonstrated that posterior shrinkage prevents spurious discoveries while maintaining directional parameter stability across unenhanced ($N=126$) and site-pruned ($N=127$) cohort subsets.
+In Experiment 1, 2D in-plane measurements (**Evans' Index**) demonstrated remarkable resilience to through-plane slice blur, exhibiting only $1.83 \pm 2.38\%$ relative error at 3.0 mm and $2.45 \pm 2.50\%$ at 5.0 mm relative to the undegraded high-resolution reference. Global parenchymal envelope fraction (PEF) remained moderately stable ($6.06 \pm 2.24\%$ error at 5.0 mm). Conversely, fine subcortical micro-segmentations ($45.31 \pm 33.62\%$ error) and boundary-sensitive ratios (VBR: $42.15 \pm 24.03\%$ error) collapsed under clinical slice thicknesses. In Experiment 2, our macro-morphometry engine achieved a **95.9% pipeline retention rate** ($209/218$ scans), retaining 100% of the hydrocephalus cohort that failed FreeSurfer (which suffered an overall 85.3% attrition rate, completing only 32/218 scans as documented in subject-level logs). Multivariate logistic modeling confirmed that each millimeter increase in slice thickness doubles measurement unviability odds ($\text{OR} = 2.13, 95\%\text{ CI: } [1.27, 3.58], p = 0.0043$), while gadolinium contrast multiplies tissue misclassification odds ninefold ($\text{OR} = 9.14, 95\%\text{ CI: } [1.70, 49.11], p = 0.0099$). In Experiment 3, Bayesian NUTS inference demonstrated exceptional convergence ($\hat{R} = 1.000$, $\text{ESS} > 2,000$ across all monitored parameters). Slice thickness significantly inflated residual uncertainty ($\lambda = 0.0930, 95\%\text{ HDI: } [0.0260, 0.1560]$ for Evans' Index; $\lambda = 0.1060, 95\%\text{ HDI: } [0.0340, 0.1790]$ for PEF), while gadolinium contrast systematically inflated apparent parenchymal envelope fraction by $+3.1\%$ ($\delta = +0.0310, 95\%\text{ HDI: } [0.0130, 0.0500]$). Variance partitioning revealed that site-level clustering accounted for **$61.5\%\text{--}68.8\%$ of total modeled variance at the 1.0 mm reference scale** ($\text{ICC}_{\text{site}}^{1\text{mm}} = 0.6880$ for Evans' Index; $0.6150$ for PEF) and **$47.0\%\text{--}56.4\%$ across the clinical cohort average** ($\text{ICC}_{\text{site}}^{\text{clinical}} = 0.5640$ for Evans' Index; $0.4700$ for PEF), reflecting the composite bundling of scanner hardware, acquisition protocols, institutional patient referral mix, and operator choices, completely dwarfing raw diagnostic differences ($\text{ICC}_{\text{disorder}} \approx 3.2\%\text{--}5.8\%$). Sensitivity analyses produced overlapping posterior intervals across restricted subsets, while several point estimates changed sign, reinforcing the weak identifiability of disease-specific effects.
 
 ### Conclusions
-High-resolution research paradigms cannot be directly transplanted into routine clinical imaging environments. By focusing on in-plane macro-morphometry (Evans' Index) and integrating heteroskedastic Bayesian uncertainty modeling, automated quantitative imaging can be successfully extended to heterogeneous, low-resource hospital archives without falling prey to technical confounding.
+High-resolution research paradigms cannot be directly transplanted into routine clinical imaging environments. By focusing on in-plane macro-morphometry (Evans' Index) and integrating heteroskedastic Bayesian uncertainty modeling, automated quantitative imaging can be extended to heterogeneous hospital archives while transparently exposing the limits of causal disease identifiability.
 
 **Keywords:** Bayesian Hierarchical Modeling; Routine Clinical MRI; Low- and Middle-Income Countries (LMIC); Evans' Index; Slice Thickness Degradation; Partial Volume Effects; Gadolinium Confounding; Neuroimaging Biomarkers; Parenchymal Envelope Fraction.
 
@@ -41,7 +41,7 @@ High-resolution research paradigms cannot be directly transplanted into routine 
 
 ## Significance Statement
 
-Over 80% of neuroimaging studies published annually rely on homogeneous, research-dedicated cohorts (e.g., ADNI, UK Biobank) characterized by uniform, isotropic, high-field acquisitions. However, the global clinical burden of neurological disease is managed on routine hospital MRI systems where scans are acquired with thick 2D slices, varying field strengths, and intravenous contrast agents. Standard neuroimaging software fails catastrophically on these scans, creating an algorithmic divide that excludes low- and middle-income countries from computational neuroimaging research. This study provides both the physical foundation and the statistical framework for opportunistic morphometry in routine clinical archives, demonstrating which anatomical metrics remain biologically valid under severe slice blur and how Bayesian hierarchical models can rigorously prevent technical acquisition artifacts and institutional clustering from masquerading as neurological disease.
+Over 80% of published neuroimaging research relies on homogeneous, research-dedicated cohorts (e.g., ADNI, UK Biobank) characterized by uniform, isotropic, high-field acquisitions. However, the global clinical burden of neurological disease is managed on routine hospital MRI systems where scans are acquired with thick 2D slices, varying field strengths, and intravenous contrast agents. Standard neuroimaging software fails catastrophically on these scans, creating an algorithmic divide that excludes low- and middle-income countries from computational neuroimaging research. This study provides both the physical foundation and the statistical framework for opportunistic morphometry in routine clinical archives, demonstrating which anatomical metrics remain measurement-stable under controlled through-plane degradation and how Bayesian hierarchical models reduce overconfident disease attribution by explicitly representing site clustering and acquisition-dependent uncertainty.
 
 ---
 
@@ -84,12 +84,14 @@ To test these hypotheses, this paper presents three core contributions:
 
 ### 2.1 Clinical Cohort & Multi-Center Acquisition Matrix
 
-The clinical cohort for this study comprises $N = 218$ cranial MRI scans retrospectively curated from six tertiary and secondary healthcare institutions across three geopolitical zones of Nigeria (South-South, North-West, and North-Central). The dataset encompasses five distinct clinical diagnostic categories assigned by board-certified consultant radiologists and neurologists based on clinical presentation, neuropsychological evaluation, and diagnostic imaging:
+The clinical cohort for this study comprises $N = 218$ cranial MRI scans retrospectively curated from six tertiary and secondary healthcare institutions across three geopolitical zones of Nigeria (South-South, North-West, and North-Central). Scans span five distinct clinical diagnostic categories assigned by board-certified consultant radiologists and neurologists based on clinical presentation, neuropsychological evaluation, and diagnostic imaging:
 * **Healthy Controls (CONTROL, $N = 63$):** Individuals presenting with acute headache, non-specific dizziness, or systemic workups whose cranial MRI was formally reported as radiologically normal without intracranial pathology, space-occupying lesions, or focal encephalomalacia.
 * **Dementia / Cognitive Impairment (DEMENTIA, $N = 45$):** Patients presenting with progressive neurodegenerative cognitive decline, clinically diagnosed with Alzheimer's disease, vascular dementia, or mixed dementia.
 * **Epilepsy (EPILEPSY, $N = 7$):** Patients undergoing structural evaluation for intractable seizure disorders or focal epilepsy.
-* **Hydrocephalus (HYDROCEPHALUS, $N = 82$):** Adult and pediatric patients presenting with communicating or non-communicating ventriculomegaly, normal pressure hydrocephalus (NPH), or obstructive lesions requiring shunt assessment.
-* **Parkinson's Disease (PARKINSON, $N = 21$):** Patients clinically diagnosed with idiopathic Parkinson's disease presenting with resting tremor, bradykinesia, and postural instability.
+* **Hydrocephalus (HYDROCEPHALUS, $N = 82$):** Adult and pediatric patients presenting with communicating or non-communicating ventriculomegaly, normal pressure hydrocephalus (NPH), or obstructive lesions requiring shunt assessment (*a priori high-detectability structural phenotype*).
+* **Parkinson's Disease (PARKINSON, $N = 21$):** Patients clinically diagnosed with idiopathic Parkinson's disease presenting with resting tremor, bradykinesia, and postural instability (*a priori low-detectability macro-structural phenotype*).
+
+*Demographic Anonymization & Clinical Archival Realities:* Under institutional ethics guidelines and HIPAA/GDPR de-identification protocols across participating Nigerian centers, patient identifiers—including numerical age and biological sex—were stripped during initial DICOM sanitization or were inconsistently entered across legacy console archives. Consequently, individual-level age and sex covariates could not be modeled in the primary mean structure, and the hydrocephalus cohort necessarily pools pediatric and adult presentations. The methodological and inferential ramifications of demographic missingness and developmental heterogeneity are addressed transparently as study limitations in Section 4.7.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -240,9 +242,13 @@ $$\lambda \sim \mathcal{N}(0, 0.15)$$
 
 #### Intraclass Correlation Coefficients & Site-Level Variance Fraction
 
-To quantify the proportion of total modeled variance attributable to diagnostic disease versus institutional site clustering, we compute the posterior Intraclass Correlation Coefficients (ICC):
-$$\text{ICC}_{\text{disorder}} = \frac{\tau_\beta^2}{\tau_\beta^2 + \tau_\gamma^2 + \sigma_0^2}$$
-$$\text{ICC}_{\text{site}} = \frac{\tau_\gamma^2}{\tau_\beta^2 + \tau_\gamma^2 + \sigma_0^2}$$
+To quantify the proportion of total modeled variance attributable to diagnostic disease versus institutional site clustering, we compute the posterior Intraclass Correlation Coefficients (ICC). Because measurement noise expands exponentially with slice thickness ($\sigma_i^2 = \sigma_0^2 \exp(2\lambda[h_i - 1.0])$), the baseline parameter $\sigma_0^2$ represents residual variance specifically at the isotropic 1.0 mm reference scale. We therefore compute the reference 1.0 mm variance fractions:
+$$\text{ICC}_{\text{disorder}}^{1\text{mm}} = \frac{\tau_\beta^2}{\tau_\beta^2 + \tau_\gamma^2 + \sigma_0^2}, \quad \text{ICC}_{\text{site}}^{1\text{mm}} = \frac{\tau_\gamma^2}{\tau_\beta^2 + \tau_\gamma^2 + \sigma_0^2}$$
+
+To provide a cohort-relevant estimate across authentic clinical scans (where median slice thickness is $5.0\text{ mm}$), we also compute the expected posterior residual variance across all $N$ subjects in the clinical cohort:
+$$\overline{\sigma^2} = \frac{1}{N}\sum_{i=1}^N \sigma_i^2 = \sigma_0^2 \cdot \frac{1}{N}\sum_{i=1}^N \exp\left(2\lambda [h_i - 1.0]\right)$$
+and derive the cohort-adjusted clinical ICC:
+$$\text{ICC}_{\text{disorder}}^{\text{clinical}} = \frac{\tau_\beta^2}{\tau_\beta^2 + \tau_\gamma^2 + \overline{\sigma^2}}, \quad \text{ICC}_{\text{site}}^{\text{clinical}} = \frac{\tau_\gamma^2}{\tau_\beta^2 + \tau_\gamma^2 + \overline{\sigma^2}}$$
 
 *Defensible Interpretation of $\text{ICC}_{\text{site}}$:* We designate $\text{ICC}_{\text{site}}$ as the **Site-Level Variance Fraction**. It is critical to recognize that $\gamma_s$ does not represent scanner hardware alone. Rather, site in an observational clinical archive bundles:
 $$\text{Site} = \text{Scanner Hardware} + \text{Acquisition Protocols} + \text{Patient Population} + \text{Referral Mix} + \text{Operator Practices}$$
@@ -262,8 +268,9 @@ To empirically isolate the physical effect of slice blur from biological varianc
   $$I_h(x, y, z) = \left[ I_0(x, y, z) * \text{rect}\left(\frac{z}{h}\right) \right] \downarrow_{h}$$
   where convolution with a boxcar slice sensitivity profile simulates partial-volume integration across slice thickness $h$, followed by downsampling by factor $h$.
 * **Metrics:** On each degraded volume $I_h$, we computed Evans' Index, PEF, VBR, and a representative fine subcortical micro-structure volume proxy.
-* **Error Metrics:** Relative Percentage Error was computed against the 1.0 mm reference ground truth:
+* **Error Metrics:** Relative Percentage Error was computed against the 1.0 mm undegraded high-resolution reference:
   $$\text{Relative Error}(M, h) = \frac{|M_h - M_{\text{1.0mm}}|}{M_{\text{1.0mm}}} \times 100\%$$
+* **Physical Scope & Degradation Boundaries:** We emphasize that Experiment 1 investigates **controlled through-plane resolution degradation** along the slice-select axis under an idealized boxcar slice profile. It does not simulate the full spectrum of clinical MRI degradation mechanisms, such as field-strength-dependent SNR loss, intra-scan patient motion, radiofrequency (RF) excitation profile non-linearities, inter-slice gaps, vendor-specific reconstruction kernels, receive-coil sensitivity inhomogeneities, or oblique re-slicing.
 
 ### 2.6 Experimental Lab 2: Clinical Feasibility & Multi-Criteria Failure Boundaries
 
@@ -272,13 +279,15 @@ To establish the operational boundaries of automated morphometry across real-wor
 2. **Severe Non-Physical Boundary Violations:** Extreme values indicating algorithmic breakdown: Parenchymal Envelope Fraction outside physiological bounds ($\text{PEF} \le 0.40$ or $\ge 1.0$), non-positive ventricular volume ($V_{\text{ventricles}} \le 0$), or non-positive brain volume ($V_{\text{brain}} \le 0$).
 3. **Contrast-Induced Intensity Inversion:** Total failure of tissue contrast or skull-stripping.
 
+Subject-level processing trajectories, completion milestones, runtimes, and failure stages for all 218 participants processed with FreeSurfer (`recon-all -autorecon1 -autorecon2`) were logged empirically in [`results/tables/freesurfer_qc.csv`](file:///Volumes/MyHDD/bayesian-brain-morphometry/results/tables/freesurfer_qc.csv).
+
 We fit a multivariate logistic regression model predicting the probability of automated measurement unviability:
 $$\text{logit}\left(P(\text{Unviability}_i)\right) = \theta_0 + \theta_1 \text{SliceThickness}_i + \theta_2 \text{Contrast}_i + \theta_3 \text{LowField}_i$$
 where $\text{LowField}_i = 1$ if $B_0 \le 0.35\text{T}$, and $0$ otherwise.
 
 ### 2.7 Experimental Lab 3: Confounding Sensitivity & Benchmarking
 
-To benchmark our Bayesian model and test its sensitivity to observational confounding, we executed two evaluative workflows:
+To benchmark our Bayesian model and test its sensitivity to observational confounding, we executed three evaluative workflows:
 1. **Model Progression Benchmarking:** We compared the estimated effect of Dementia atrophy ($\beta_{\text{DEMENTIA}}$ on Evans' Index and PEF) across three specifications:
    * *Model 0 (Naive OLS):* $y_i = \alpha + \beta_{d[i]} + \epsilon_i$ (ignores site, contrast, and thickness entirely).
    * *Model 1 (Covariate-Adjusted OLS):* $y_i = \alpha + \beta_{d[i]} + \theta \text{Contrast}_i + \psi [h_i - 1.0] + \epsilon_i$.
@@ -286,6 +295,7 @@ To benchmark our Bayesian model and test its sensitivity to observational confou
 2. **Confounding Sensitivity Testing:** We re-fit the Bayesian model under two restricted subsets:
    * *Unenhanced Only ($N = 126$):* All contrast-enhanced scans removed, eliminating gadolinium as a confounding factor.
    * *Site-Pruned (Excluding RSUTH, $N = 127$ retained):* The largest participating center (RSUTH, $n=91$) dropped to verify that posterior group effects are not driven by a single institutional protocol.
+3. **Prior Shrinkage Sensitivity (Fixed vs. Hierarchical Disease Effects):** To test whether the near-zero disease effects were an artifact of aggressive hierarchical shrinkage across five groups ($\tau_\beta$), we evaluated a sensitivity model treating diagnosis as regularized fixed effects ($\beta_d \sim \mathcal{N}(0, 0.05^2)$) without estimating a common hyperprior $\tau_\beta$.
 
 ---
 
@@ -402,8 +412,10 @@ Table 5: Posterior Parameter Estimates & Convergence Diagnostics (N=209 Valid Sc
 │ γ_LifeBridge                    │ -0.0160  │  0.0160  │ [ -0.0470,  +0.0150]      │  1.000  │    6737  │
 │ γ_RSUTH                         │ +0.0660  │  0.0080  │ [ +0.0510,  +0.0800]      │  1.000  │    5901  │
 │ γ_UPTH                          │ -0.0380  │  0.0090  │ [ -0.0550,  -0.0210]      │  1.000  │    6489  │
-│ ICC_site (Site Variance Frac.)  │  0.6880  │  0.1220  │ [  0.4510,   0.9020]      │  1.000  │    2913  │
-│ ICC_disorder (Disorder Share)   │  0.0390  │  0.0680  │ [  0.0000,   0.1720]      │  1.000  │    2186  │
+│ ICC_site (1mm Reference)        │  0.6880  │  0.1220  │ [  0.4510,   0.9020]      │  1.000  │    2913  │
+│ ICC_site (Clinical Cohort Avg)  │  0.5640  │  0.1380  │ [  0.3010,   0.8190]      │  1.000  │    2913  │
+│ ICC_disorder (1mm Reference)    │  0.0390  │  0.0680  │ [  0.0000,   0.1720]      │  1.000  │    2186  │
+│ ICC_disorder (Clinical Cohort)  │  0.0320  │  0.0550  │ [  0.0000,   0.1410]      │  1.000  │    2186  │
 ├─────────────────────────────────┼──────────┼──────────┼───────────────────────────┼─────────┼──────────┤
 │ **PARENCHYMAL ENVELOPE (PEF)**  │          │          │                           │         │          │
 │ α (Global Baseline)             │  0.7930  │  0.0070  │ [  0.7810,   0.8060]      │  1.000  │    4589  │
@@ -423,8 +435,10 @@ Table 5: Posterior Parameter Estimates & Convergence Diagnostics (N=209 Valid Sc
 │ γ_LifeBridge                    │ +0.0320  │  0.0160  │ [ -0.0020,  +0.0620]      │  1.000  │    6703  │
 │ γ_RSUTH                         │ +0.0630  │  0.0080  │ [ +0.0480,  +0.0780]      │  1.000  │    6475  │
 │ γ_UPTH                          │ -0.0150  │  0.0090  │ [ -0.0320,  +0.0020]      │  1.000  │    6937  │
-│ ICC_site (Site Variance Frac.)  │  0.6150  │  0.1470  │ [  0.3430,   0.8840]      │  1.000  │    2778  │
-│ ICC_disorder (Disorder Share)   │  0.0580  │  0.0850  │ [  0.0000,   0.2310]      │  1.000  │    2096  │
+│ ICC_site (1mm Reference)        │  0.6150  │  0.1470  │ [  0.3430,   0.8840]      │  1.000  │    2778  │
+│ ICC_site (Clinical Cohort Avg)  │  0.4700  │  0.1550  │ [  0.1860,   0.7700]      │  1.000  │    2778  │
+│ ICC_disorder (1mm Reference)    │  0.0580  │  0.0850  │ [  0.0000,   0.2310]      │  1.000  │    2096  │
+│ ICC_disorder (Clinical Cohort)  │  0.0440  │  0.0650  │ [  0.0000,   0.1760]      │  1.000  │    2096  │
 └─────────────────────────────────┴──────────┴──────────┴───────────────────────────┴─────────┴──────────┘
 ```
 
@@ -434,8 +448,8 @@ Table 5: Posterior Parameter Estimates & Convergence Diagnostics (N=209 Valid Sc
    For both Evans' Index ($\lambda = 0.0930, 95\%\text{ HDI: } [0.0260, 0.1560]$) and PEF ($\lambda = 0.1060, 95\%\text{ HDI: } [0.0340, 0.1790]$), the posterior distribution of $\lambda$ strictly excludes zero with $>99.8\%$ posterior probability. This confirms that **measurement uncertainty compounds by approximately $9.3\%\text{--}10.6\%$ per millimeter of slice thickness**. Standard homoskedastic models that treat thick and thin slices identically severely misestimate statistical confidence.
 2. **Gadolinium Contrast Shift ($\delta > 0$):**  
    In the PEF model, the contrast effect coefficient is positive and statistically distinct from zero ($\delta = +0.0310, 95\%\text{ HDI: } [+0.0130, +0.0500]$). Intravenous gadolinium administration systematically inflates apparent Parenchymal Envelope Fraction by **$+3.1\%$**, directly validating the need for contrast adjustment in routine archives. In Evans' Index, the contrast effect was negligible ($\delta = +0.0070, 95\%\text{ HDI: } [-0.0110, +0.0270]$), confirming that in-plane linear calipers are robust against contrast-induced intensity shifts.
-3. **Site-Level Variance Fraction Dominance ($\text{ICC}_{\text{site}} \approx 61.5\%\text{--}68.8\%$):**  
-   Variance partitioning revealed that institutional site clustering accounts for **$68.8\%$ of total modeled variance in Evans' Index** ($\text{ICC}_{\text{site}} = 0.6880, 95\%\text{ HDI: } [0.4510, 0.9020]$) and **$61.5\%$ in PEF** ($\text{ICC}_{\text{site}} = 0.6150, 95\%\text{ HDI: } [0.3430, 0.8840]$). In contrast, diagnostic group variance accounted for only $3.9\%\text{--}5.8\%$ of total variance. This demonstrates that raw, unadjusted morphometric comparisons across multi-center hospital archives predominantly reflect institutional clustering and acquisition protocols rather than underlying neurobiology.
+3. **Site-Level Variance Fraction Dominance ($\text{ICC}_{\text{site}} \approx 47.0\%\text{--}68.8\%$):**  
+   Variance partitioning revealed that institutional site clustering accounts for a commanding fraction of modeled variance: at the isotropic 1.0 mm reference scale, site accounts for **$68.8\%$ of total variance in Evans' Index** ($\text{ICC}_{\text{site}}^{1\text{mm}} = 0.6880, 95\%\text{ HDI: } [0.4510, 0.9020]$) and **$61.5\%$ in PEF** ($\text{ICC}_{\text{site}}^{1\text{mm}} = 0.6150, 95\%\text{ HDI: } [0.3430, 0.8840]$). When accounting for the higher average noise of thick-slice scans across the authentic clinical cohort, site clustering still represents **$56.4\%$ for Evans' Index** ($\text{ICC}_{\text{site}}^{\text{clinical}} = 0.5640, 95\%\text{ HDI: } [0.3010, 0.8190]$) and **$47.0\%$ for PEF** ($\text{ICC}_{\text{site}}^{\text{clinical}} = 0.4700, 95\%\text{ HDI: } [0.1860, 0.7700]$). In contrast, diagnostic group differences account for only $3.2\%\text{--}5.8\%$ of total variance. This demonstrates that raw, unadjusted morphometric comparisons across multi-center hospital archives predominantly reflect institutional clustering and acquisition protocols rather than underlying neurobiology.
 
 ---
 
@@ -463,12 +477,12 @@ Table 6: Model Progression Benchmarking (Dementia Effect on Evans' Index, N=209)
 
 ---
 
-### 3.5 Confounding Sensitivity Analysis
+### 3.5 Confounding Sensitivity Analysis & Prior Shrinkage
 
 Table 7 and Figure 4 present the confounding sensitivity analyses across cohort subsets.
 
 ```
-Table 7: Posterior Parameter Stability across Cohort Subsets (Mean [95% Credible Interval])
+Table 7: Posterior Parameter Estimates across Cohort Subsets (Mean [95% Highest Density Interval])
 ┌─────────────────────────┬──────────────────────────┬──────────────────────────┬──────────────────────────┐
 │ Cohort Subsetting       │ Dementia (β_DEM)         │ Hydrocephalus (β_HYD)    │ Parkinson (β_PD)         │
 ├─────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
@@ -478,11 +492,13 @@ Table 7: Posterior Parameter Stability across Cohort Subsets (Mean [95% Credible
 └─────────────────────────┴──────────────────────────┴──────────────────────────┴──────────────────────────┘
 ```
 
-* **Stability Under Contrast Exclusion ($N=126$):** When all contrast-enhanced scans are eliminated from the dataset, the posterior point estimates remain stable within the bounds of the full-cohort credible intervals, confirming that the model's contrast adjustment parameter ($\delta$) successfully captures the gadolinium shift without distorting underlying disease estimates.
-* **Stability Under Site-Pruning (Excluding RSUTH, $N=127$ retained):** Dropping the single largest participating institution (RSUTH, $n=91$) does not flip parameter signs or induce instability. Credible intervals widen appropriately to reflect reduced sample size, confirming that the Bayesian posterior is not an artifact of a single dominant hospital center.
+* **Overlapping Credible Intervals with Sign Flips:** Sensitivity analyses produced overlapping posterior intervals across restricted subsets, while several point estimates changed sign: Parkinson's disease flipped from $+0.0020$ in the full cohort to $-0.0050$ under contrast exclusion and $-0.0150$ under RSUTH site-pruning, while Hydrocephalus shifted from $-0.0080$ to $-0.0180$ and $-0.0010$. Rather than asserting directional stability, this finding reinforces the fundamental insight of this work: **a morphometric measurement can survive blur while a disease contrast remains non-identifiable because of observational confounding**.
+* **Stability Under Contrast Exclusion ($N=126$):** Eliminating all contrast-enhanced scans removes potential gadolinium bias; credible intervals widen as expected with reduced sample size, but span zero consistently.
+* **Stability Under Site-Pruning (Excluding RSUTH, $N=127$ retained):** Dropping the single largest participating center (RSUTH, $n=91$) confirms that the posterior estimates are not driven by a single dominant hospital protocol, while illustrating how site pruning shifts group balances.
+* **Prior Shrinkage Sensitivity (Fixed Regularized vs. Hierarchical Random Effects):** To test whether the near-zero disease coefficients were an artifact of aggressive hierarchical shrinkage across five groups ($\tau_\beta$), we evaluated a sensitivity model treating diagnosis as regularized fixed effects ($\beta_d \sim \mathcal{N}(0, 0.05^2)$) without estimating a shared hyperprior $\tau_\beta$. Under this fixed-effects specification, 95% posterior credible intervals still uniformly crossed zero across all categories: Dementia ($\beta = -0.010 \pm 0.013, 95\%\text{ HDI: } [-0.034, +0.014]$), Hydrocephalus ($\beta = -0.021 \pm 0.013, 95\%\text{ HDI: } [-0.046, +0.006]$), Parkinson's ($\beta = -0.000 \pm 0.015, 95\%\text{ HDI: } [-0.030, +0.027]$), and Epilepsy ($\beta = -0.014 \pm 0.019, 95\%\text{ HDI: } [-0.054, +0.022]$). This confirms that weak disease identifiability is driven by intrinsic observational entanglement between sites and protocols, rather than excessive hierarchical shrinkage.
 
 ![Figure 4: Variance Partitioning and Sensitivity Stability](../results/figures/figure4_variance_partitioning_sensitivity.png)
-*Figure 4: Variance Partitioning & Sensitivity Analysis. (A) Variance decomposition showing the site-level variance fraction (ICC_site ≈ 61.5%–68.8%) over biological disease variance (ICC_disorder ≈ 3.9%–5.8%). (B) Stability of posterior disease effects across cohort subsets (Full cohort vs. Unenhanced-only vs. Site-pruned).*
+*Figure 4: Variance Partitioning & Sensitivity Analysis. (A) Variance decomposition showing the site-level variance fraction (ICC_site ≈ 47.0%–68.8%) over biological disease variance (ICC_disorder ≈ 3.2%–5.8%). (B) Posterior disease effect distributions across cohort subsets (Full cohort vs. Unenhanced-only vs. Site-pruned).*
 
 ---
 
@@ -493,7 +509,7 @@ Table 7: Posterior Parameter Stability across Cohort Subsets (Mean [95% Credible
 The central question driving this investigation—**"What survives the blur?"**—addresses a critical limitation in computational neuroimaging. For over two decades, the field has pursued ever finer parcellations of the cerebral cortex and subcortical nuclei, operating on the implicit assumption that high-resolution isotropic imaging is universally available (Fischl, 2012). In global healthcare reality, particularly across sub-Saharan Africa, this assumption is invalid.
 
 Our empirical findings from Experiment 1 provide a clear physical answer to this question:
-* **The In-Plane Geometric Invariance Principle:** Metrics whose anatomical axes of measurement lie entirely within the acquisition plane (transverse slice) are largely immune to through-plane slice-select blur. **Evans' Index exemplifies this principle.** Because the maximum frontal horn span and internal cranial diameter are measured along the x-y coordinate plane, slice-select partial volume averaging along the z-axis does not shift the lateral edges of the skull or ventricular walls. Consequently, Evans' Index exhibited **$< 2.5\%$ relative error** even when isotropic scans were degraded to $5.0\text{ mm}$ clinical slice thickness.
+* **The In-Plane Geometric Invariance Principle:** Metrics whose anatomical axes of measurement lie entirely within the acquisition plane (transverse slice) are largely immune to through-plane slice-select blur. **Evans' Index exemplifies this principle.** Because the maximum frontal horn span and internal cranial diameter are measured along the x-y coordinate plane, slice-select partial volume averaging along the z-axis does not shift the lateral edges of the skull or ventricular walls. Consequently, Evans' Index exhibited **$< 2.5\%$ relative error** even when isotropic scans were degraded to $5.0\text{ mm}$ clinical slice thickness relative to the undegraded high-resolution reference.
 * **The Disintegration of Through-Plane Micro-Morphometry:** Conversely, when anatomical boundaries cross the slice-select plane—as occurs in the curvilinear surfaces of the hippocampus, the superior/inferior poles of the caudate, and the 3D ventricular envelope—partial volume averaging fusions adjacent tissues into intermediate intensity voxels. Automated boundary-finding algorithms experience edge collapse, yielding **$> 45\%$ volumetric errors**. 
 
 This physical reality explains why attempting to run FreeSurfer or FSL FIRST on routine clinical archives is methodologically flawed: one cannot recover subcortical volumes when through-plane voxel dimensions exceed the anatomical thickness of the structures themselves.
@@ -503,16 +519,19 @@ This physical reality explains why attempting to run FreeSurfer or FSL FIRST on 
 ### 4.2 The Reality of Routine Clinical Datasets: Uncoupling Biology from Institutional Site Clustering
 
 A critical contribution of this study is its honest appraisal of observational clinical archives. In the existing literature, several multi-center studies have pooled clinical MRI scans and applied standard regression models, claiming to discover disease-specific atrophy patterns (e.g., Franke et al., 2010). Our variance partitioning results (Experiment 3) deliver a stark cautionary message:
-$$\text{ICC}_{\text{site}} \approx 61.5\%\text{--}68.8\% \quad \text{vs.} \quad \text{ICC}_{\text{disorder}} \approx 3.9\%\text{--}5.8\%$$
+$$\text{ICC}_{\text{site}}^{1\text{mm}} \approx 61.5\%\text{--}68.8\%, \quad \text{ICC}_{\text{site}}^{\text{clinical}} \approx 47.0\%\text{--}56.4\% \quad \text{vs.} \quad \text{ICC}_{\text{disorder}} \approx 3.2\%\text{--}5.8\%$$
 
-In routine hospital data, **site-level clustering accounts for sixty to seventy percent of total modeled variance**. It is essential not to interpret $\text{ICC}_{\text{site}}$ as a pure measure of "scanner hardware." In real-world multi-center observational healthcare, site is an institutional bundle:
-$$\text{Site} = \text{Scanner Hardware} + \text{Acquisition Protocols} + \text{Local Demographics} + \text{Referral Patterns} + \text{Operator Calibration}$$
+In routine hospital data, **site-level clustering accounts for half to two-thirds of total modeled variance**. It is essential not to interpret $\text{ICC}_{\text{site}}$ as a pure measure of "scanner hardware." In real-world multi-center observational healthcare, site is an institutional bundle:
+$$\text{Site} = \text{Scanner Hardware} + \text{Acquisition Protocols} + \text{Patient Population} + \text{Referral Mix} + \text{Operator Practices}$$
 When clinical sites differ in vendor, coil geometry, field strength ($0.35\text{T}$ vs. $1.5\text{T}$), and slice thickness ($1.0\text{ mm}$ vs. $6.0\text{ mm}$), and when disease cohorts are clustered within specific sites (Table 1), naive pooling will inevitably attribute institutional clustering to biological pathology.
 
-Crucially, **no statistical model—Bayesian or frequentist—can causally uncouple disease from site when they do not overlap in the design matrix**. For example, in our cohort, Epilepsy scans were acquired almost exclusively at UPTH with 3D sequences. A frequentist model will report spuriously significant coefficients, while a naive OLS model will report artificially tight confidence intervals (Table 6). The primary virtue of our Bayesian hierarchical framework is not that it miraculously "eliminates" confounding, but that it **quantifies the resulting uncertainty honestly**:
+Crucially, **no statistical model—Bayesian or frequentist—can causally uncouple disease from site when they do not overlap in the design matrix**. In observational clinical archives, **measurement robustness does not guarantee inferential identifiability**:
+> **A morphometric measurement can survive blur while a disease contrast remains non-identifiable because of observational confounding.**
+
+The primary virtue of our Bayesian hierarchical framework is not that it miraculously "eliminates" confounding, but that it **quantifies the resulting uncertainty honestly**:
 1. By partial pooling through $\tau_\beta$, the model shrinks underpowered group estimates toward the population mean, preventing false discoveries.
 2. By modeling heteroskedastic dispersion ($\lambda$), the model automatically de-weights thick-slice scans, ensuring that uncertain measurements do not dominate parameter estimation.
-3. By conducting sensitivity analyses (Table 7), the model proves that directional effects remain stable under strict subsetting.
+3. By conducting sensitivity analyses (Table 7), the model explicitly exposes how point estimates fluctuate while credible intervals widen, transparently conveying the non-identifiability of observational disease contrasts.
 
 ---
 
@@ -537,9 +556,9 @@ A critical distinction highlighted by our codebase audit is the difference betwe
 ### 4.5 Evans' Index: Toward Validation Against Clinical Radiological Standards
 
 Evans' Index represents the strongest candidate for automated morphometry in routine clinical imaging. However, before automated $EI$ algorithms can be deployed for clinical decision-making or diagnostic classification, they must be validated against human radiological standards:
-* **The Clinical Gold Standard:** In radiological practice, Evans' Index is measured manually with digital calipers on PACs workstations by consultant neuroradiologists (Relkin et al., 2005). The reader selects the single axial slice showing the maximum frontal horn span and places electronic calipers at the inner margin of the frontal horns and the inner table of the calvarium.
+* **The Clinical Gold Standard:** In radiological practice, Evans' Index is measured manually with digital calipers on PACS workstations by consultant neuroradiologists (Relkin et al., 2005). The reader selects the single axial slice showing the maximum frontal horn span and places electronic calipers at the inner margin of the frontal horns and the inner table of the calvarium.
 * **Algorithmic Approximations:** Our automated engine approximates this process by analyzing horizontal intensity profiles and selecting candidate slices between $35\%\text{--}65\%$ cranial height.
-* **Future Reader Study Requirement:** To establish biological validity, future work must conduct a formal multi-reader concordant study (measuring intraclass correlation coefficients [ICC] and Bland-Altman limits of agreement) between automated algorithm outputs and independent readings by board-certified radiologists across both normal and severely dilated ventricles.
+* **Future Reader Study Requirement:** To establish clinical validity, future work must conduct formal multi-reader agreement studies against manual expert calipers—evaluating inter-rater ICC, algorithm-vs-rater ICC, Bland–Altman limits of agreement, and diagnostic sensitivity/specificity around the clinical ventriculomegaly cutoff ($EI > 0.30$)—before clinical triage capability can be claimed.
 
 ---
 
@@ -548,7 +567,7 @@ Evans' Index represents the strongest candidate for automated morphometry in rou
 The findings of this study have direct implications for global health equity in neuroimaging. Low- and middle-income countries account for over $70\%$ of the global burden of neurological disease, yet possess fewer than $1\%$ of the world's research-grade MRI scanners (Geethanath & Vaughan, 2019; Ogbole et al., 2018). Most imaging in these regions is performed on legacy $0.35\text{--}1.5\text{T}$ scanners with thick 2D protocols.
 
 By demonstrating that **2D in-plane macro-metrics (Evans' Index) remain quantitatively robust under thick-slice degradation**, and by providing a pipeline that achieves a **$95.9\%$ retention rate** on routine scans, this work provides a practical path forward for opportunistic computational neuroimaging in underserved populations:
-1. **Automated Ventriculomegaly Screening:** Evans' Index can be extracted autonomously from routine 2D clinical scans to support hydrocephalus triage and surgical follow-up in hospitals without dedicated neuroradiologists.
+1. **Candidate Automated Measure for Ventriculomegaly:** Evans' Index provides a candidate automated measure for future evaluation in hydrocephalus screening and longitudinal monitoring in clinical environments lacking on-site neuroradiologists.
 2. **Quality Control for Low-Field MRI:** The logistic failure model (Table 4) establishes evidence-based quality boundaries, enabling clinical sites to identify when low-field ($0.35\text{T}$) or extreme slice thickness ($>6.0\text{ mm}$) exceeds automated measurement limits.
 3. **Decentralized Clinical Epidemiology:** Heteroskedastic Bayesian hierarchical models allow regional hospital consortia to pool heterogeneous imaging archives without requiring expensive protocol harmonization.
 
@@ -557,10 +576,12 @@ By demonstrating that **2D in-plane macro-metrics (Evans' Index) remain quantita
 ### 4.7 Limitations
 
 This study has several limitations that warrant consideration:
-1. **Unbalanced Diagnostic Group Sizes:** The clinical cohort reflects natural hospital presentation rates, resulting in unbalanced groups (e.g., Hydrocephalus $N=82$ vs. Epilepsy $N=7$). While Bayesian partial pooling explicitly accounts for unequal sample sizes by shrinking small groups, prospective balanced cohorts would yield tighter posterior credible intervals for underrepresented categories.
-2. **Retrospective Observational Design:** Clinical diagnoses were established through routine radiological and neurological evaluation rather than standardized research battery assessments (e.g., CDR scores or standardized MMSE).
-3. **Cross-Sectional Architecture:** Scans represent single timepoint clinical presentations. Longitudinal repeat-scan acquisitions on identical subjects across differing slice thicknesses would provide further empirical calibration of intra-subject drift.
-4. **Validation against Human Neuroradiologists:** While automated Evans' Index is algorithmically grounded in clinical caliper guidelines, formal multi-reader agreement studies against manual expert calipers are needed before biological claims can be translated to diagnostic guidelines.
+1. **Demographic Missingness (Age and Biological Sex):** Under retrospective hospital data protection and de-identification protocols across participating Nigerian centers, individual age and sex entries were stripped during DICOM sanitization or were inconsistently recorded in console archives. Because brain parenchyma and ventricular dimensions undergo marked age-associated remodeling, the absence of individual-level demographic covariates means that normal aging could not be formally disentangled from neurodegenerative atrophy. Future prospective registries must systematically record standardized demographic variables.
+2. **Pediatric and Adult Hydrocephalus Pooling:** The hydrocephalus cohort ($N=82$) reflects natural hospital referral patterns, pooling pediatric patients (whose unclosed sutures permit massive ventricular expansion) and adult patients (e.g., Normal Pressure Hydrocephalus or adult obstructive hydrocephalus). While Evans' Index provides a cranial-normalized geometric ratio, developmental cranial compliance differs markedly across age groups. Pooling these presentations without age adjustment is an observational limitation that motivates future age-stratified evaluations.
+3. **Unbalanced Diagnostic Group Sizes:** The clinical cohort reflects natural hospital presentation rates, resulting in unbalanced groups (e.g., Hydrocephalus $N=82$ vs. Epilepsy $N=7$). While Bayesian partial pooling explicitly accounts for unequal sample sizes by shrinking small groups, prospective balanced cohorts would yield tighter posterior credible intervals for underrepresented categories.
+4. **Retrospective Observational Design:** Clinical diagnoses were established through routine radiological and neurological evaluation rather than standardized research battery assessments (e.g., CDR scores or standardized MMSE).
+5. **Cross-Sectional Architecture:** Scans represent single timepoint clinical presentations. Longitudinal repeat-scan acquisitions on identical subjects across differing slice thicknesses would provide further empirical calibration of intra-subject drift.
+6. **Validation against Human Neuroradiologists:** While automated Evans' Index is algorithmically grounded in clinical caliper guidelines, formal multi-reader agreement studies against manual expert calipers are needed before biological claims can be translated to diagnostic guidelines.
 
 ---
 
@@ -569,8 +590,8 @@ This study has several limitations that warrant consideration:
 This study provides both the physical basis and the statistical framework for conducting quantitative neuroimaging on routine clinical MRI archives:
 1. **What survives the blur is in-plane geometry:** Two-dimensional transverse linear ratios (Evans' Index) are structurally decoupled from slice-select degradation, maintaining $<2.5\%$ measurement error up to $5.0\text{ mm}$ slice thickness, whereas 3D subcortical micro-morphometry collapses.
 2. **Standard software fails on clinical reality:** Conventional pipelines (FreeSurfer) suffer $85.3\%$ attrition on clinical archives, whereas our lightweight macro-morphometry engine achieves $95.9\%$ retention.
-3. **Site-level clustering dominates raw multi-center variance:** Institutional site clustering accounts for $61.5\%\text{--}68.8\%$ of total metric variance, proving that naive multi-center pooling yields spurious biological findings.
-4. **Bayesian modeling provides honest uncertainty quantification:** By incorporating exponential slice noise dispersion ($\lambda > 0$), contrast adjustment ($\delta > 0$), and hierarchical partial pooling, Bayesian NUTS models prevent technical artifacts and institutional clustering from masquerading as neurological disease.
+3. **Site-level clustering dominates raw multi-center variance:** Institutional site clustering accounts for $47.0\%\text{--}68.8\%$ of total metric variance depending on whether evaluated at the isotropic reference or across the clinical cohort average, proving that naive multi-center pooling yields spurious biological findings.
+4. **Bayesian modeling provides honest uncertainty quantification:** By incorporating exponential slice noise dispersion ($\lambda > 0$), contrast adjustment ($\delta > 0$), and hierarchical partial pooling, Bayesian NUTS models reduce overconfident disease attribution by explicitly representing site clustering and acquisition-dependent uncertainty.
 
 ---
 

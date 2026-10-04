@@ -93,6 +93,8 @@ import pandas
 import nibabel
 import matplotlib
 import seaborn
+import pymc
+import arviz
 print("  ✓ All required scientific libraries are installed:")
 print(f"    - numpy: {numpy.__version__}")
 print(f"    - scipy: {scipy.__version__}")
@@ -100,8 +102,10 @@ print(f"    - pandas: {pandas.__version__}")
 print(f"    - nibabel: {nibabel.__version__}")
 print(f"    - matplotlib: {matplotlib.__version__}")
 print(f"    - seaborn: {seaborn.__version__}")
+print(f"    - pymc: {pymc.__version__}")
+print(f"    - arviz: {arviz.__version__}")
 ' || {
-    echo "❌ Missing scientific dependencies. Run: pip install numpy scipy pandas nibabel matplotlib seaborn"
+    echo "❌ Missing scientific dependencies. Run: pip install numpy scipy pandas nibabel matplotlib seaborn pymc arviz"
     exit 1
 }
 
@@ -123,19 +127,19 @@ else
 fi
 
 # ==============================================================================
-# STEP 2: HIERARCHICAL BAYESIAN MCMC POSTERIOR INFERENCE
+# STEP 2: HIERARCHICAL BAYESIAN MCMC POSTERIOR INFERENCE (PyMC 5.12 NUTS)
 # ==============================================================================
 echo ""
 echo "=============================================================================="
-echo "▶ STEP 2/5: Hierarchical Bayesian MCMC Sampling across Biomarkers"
+echo "▶ STEP 2/5: Hierarchical Bayesian MCMC Sampling across Biomarkers (PyMC NUTS)"
 echo "  Chains: ${MCMC_CHAINS} | Draws: ${MCMC_DRAWS} | Tune: ${MCMC_TUNE}"
 echo "=============================================================================="
 
-# 2a. Brain Parenchymal Fraction (BPF)
-echo "--- 2a. Sampling Posterior for BPF (Brain Parenchymal Fraction) ---"
+# 2a. Parenchymal Envelope Fraction (PEF)
+echo "--- 2a. Sampling Posterior for PEF (Parenchymal Envelope Fraction) ---"
 ${PYTHON_EXEC} modeling/inference.py \
     --features_csv results/tables/macro_features.csv \
-    --target_metric bpf \
+    --target_metric pef \
     --draws "${MCMC_DRAWS}" \
     --tune "${MCMC_TUNE}" \
     --chains "${MCMC_CHAINS}"
@@ -150,7 +154,7 @@ ${PYTHON_EXEC} modeling/inference.py \
     --chains "${MCMC_CHAINS}"
 
 # 2c. Evans' Index
-echo "--- 2c. Sampling Posterior for Evans' Index (Flagship Hydrocephalus Control) ---"
+echo "--- 2c. Sampling Posterior for Evans' Index (Flagship Hydrocephalus Phenotype) ---"
 ${PYTHON_EXEC} modeling/inference.py \
     --features_csv results/tables/macro_features.csv \
     --target_metric evans_index \
@@ -217,8 +221,10 @@ from pathlib import Path
 artifacts = [
     # Tables
     ("results/tables/macro_features.csv", "Table: Macro-Morphometric Cohort Features"),
+    ("results/tables/freesurfer_qc.csv", "Table: FreeSurfer QC 218 Subject Log"),
     ("results/tables/pipeline_attrition_comparison.csv", "Table: Exp 2 FreeSurfer Attrition Comparison"),
-    ("results/tables/posterior_summary_bpf.csv", "Table: BPF MCMC Posterior Summary"),
+    ("results/tables/posterior_summary_pef.csv", "Table: PEF MCMC Posterior Summary"),
+    ("results/tables/posterior_summary_bpf.csv", "Table: BPF (Legacy Mirror) MCMC Posterior Summary"),
     ("results/tables/posterior_summary_vbr.csv", "Table: VBR MCMC Posterior Summary"),
     ("results/tables/posterior_summary_evans_index.csv", "Table: Evans Index MCMC Posterior Summary"),
     ("results/tables/experiment1_degradation_summary.csv", "Table: Exp 1 Synthetic Degradation Summary"),
@@ -226,7 +232,8 @@ artifacts = [
     ("results/tables/experiment3_model_benchmarks.csv", "Table: Exp 3 Model Benchmarks"),
     ("results/tables/experiment3_sensitivity_analysis.csv", "Table: Exp 3 Confounding Sensitivity Tests"),
     # Traces
-    ("results/traces/mcmc_traces_bpf.npz", "Traces: BPF MCMC Markov Chains"),
+    ("results/traces/mcmc_traces_pef.npz", "Traces: PEF MCMC Markov Chains"),
+    ("results/traces/mcmc_traces_bpf.npz", "Traces: BPF (Legacy Mirror) MCMC Markov Chains"),
     ("results/traces/mcmc_traces_vbr.npz", "Traces: VBR MCMC Markov Chains"),
     ("results/traces/mcmc_traces_evans_index.npz", "Traces: Evans Index MCMC Markov Chains"),
     # Figures
@@ -250,7 +257,7 @@ for rel_path, desc in artifacts:
 
 print("-" * 78)
 if all_ok:
-    print("✨ ALL 15 STUDY ARTIFACTS VERIFIED SUCCESSFULLY!")
+    print("✨ ALL 19 STUDY ARTIFACTS VERIFIED SUCCESSFULLY!")
 else:
     print("⚠️ Some artifacts are missing or zero-sized. Review step logs above.")
 '

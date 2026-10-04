@@ -119,9 +119,21 @@ def build_pymc_model(
         mu_i = alpha + delta * c + gamma[site_idx] + pm.math.dot(X_diag, beta_non_ref)
 
         # 6. Variance Partitioning / Intraclass Correlation Coefficients
-        var_total = tau_gamma**2 + tau_beta**2 + sigma_0**2
-        icc_site = pm.Deterministic("ICC_site", tau_gamma**2 / var_total)
-        icc_disorder = pm.Deterministic("ICC_disorder", tau_beta**2 / var_total)
+        # Thin-slice (1.0 mm) idealized reference variance fraction:
+        var_total_1mm = tau_gamma**2 + tau_beta**2 + sigma_0**2
+        icc_site_1mm = pm.Deterministic("ICC_site_1mm", tau_gamma**2 / var_total_1mm)
+        icc_disorder_1mm = pm.Deterministic("ICC_disorder_1mm", tau_beta**2 / var_total_1mm)
+
+        # Clinical cohort average heteroskedastic residual variance:
+        # sigma_i^2 = sigma_0^2 * exp(2 * lambda * (h - 1.0))
+        mean_sigma2_cohort = pm.math.mean(sigma_i**2)
+        var_total_clinical = tau_gamma**2 + tau_beta**2 + mean_sigma2_cohort
+        icc_site_clinical = pm.Deterministic("ICC_site_clinical", tau_gamma**2 / var_total_clinical)
+        icc_disorder_clinical = pm.Deterministic("ICC_disorder_clinical", tau_beta**2 / var_total_clinical)
+
+        # Legacy alias for backward compatibility
+        icc_site = pm.Deterministic("ICC_site", icc_site_1mm)
+        icc_disorder = pm.Deterministic("ICC_disorder", icc_disorder_1mm)
 
         # 7. Likelihood
         pm.Normal("obs", mu=mu_i, sigma=sigma_i, observed=y)
@@ -171,7 +183,10 @@ def fit_bayesian_model(
     print(f"✓ All {chains} chains completed in {sampling_time:.1f}s ({sampling_time/chains:.1f}s/chain)")
 
     # Extract ArviZ summary
-    core_vars = ["alpha", "delta", "sigma_0", "lambda", "tau_beta", "tau_gamma", "ICC_site", "ICC_disorder"]
+    core_vars = [
+        "alpha", "delta", "sigma_0", "lambda", "tau_beta", "tau_gamma",
+        "ICC_site", "ICC_disorder", "ICC_site_clinical", "ICC_disorder_clinical"
+    ]
     az_core = az.summary(idata, var_names=core_vars, hdi_prob=0.95)
     az_beta = az.summary(idata, var_names=["beta_non_ref"], hdi_prob=0.95)
     az_gamma = az.summary(idata, var_names=["gamma"], hdi_prob=0.95)
@@ -223,9 +238,11 @@ def fit_bayesian_model(
         if key in az_gamma.index:
             add_row(f"gamma_{s}", az_gamma.loc[key])
 
-    # Variance decomposition
-    add_row("ICC_disorder (Disorder Share)", az_core.loc["ICC_disorder"])
-    add_row("ICC_site (Site-Level Variance Fraction)", az_core.loc["ICC_site"])
+    # Variance decomposition (Dual reporting: 1mm idealized reference vs clinical cohort average)
+    add_row("ICC_disorder (Disorder Share - 1mm Ref)", az_core.loc["ICC_disorder"])
+    add_row("ICC_site (Site Variance Fraction - 1mm Ref)", az_core.loc["ICC_site"])
+    add_row("ICC_disorder_clinical (Cohort Average Disorder Share)", az_core.loc["ICC_disorder_clinical"])
+    add_row("ICC_site_clinical (Cohort Average Site Variance Fraction)", az_core.loc["ICC_site_clinical"])
 
     summary_df = pd.DataFrame(records)
     return idata, summary_df
@@ -266,35 +283,46 @@ def main():
     if not feat_path.exists():
         sys.exit(f"Error: {feat_path} does not exist. Run feature extraction first.")
 
-    metric = args.target_metric.lower()
-    # Normalize bpf / pef
-    if metric == "bpf":
-        metric = "bpf"
+    raw_metric = args.target_metric.lower()
+    df = pd.read_csv(feat_path)
 
-    out_summary = Path(args.out_summary) if args.out_summary else Path(f"results/tables/posterior_summary_{metric}.csv")
-    out_traces = Path(args.out_traces) if args.out_traces else Path(f"results/traces/mcmc_traces_{metric}.npz")
+    # Resolve metric column: map pef <-> bpf
+    if raw_metric in ["pef", "bpf"]:
+        metric_col = "pef" if "pef" in df.columns else "bpf"
+        canonical_name = "pef"
+    else:
+        metric_col = raw_metric
+        canonical_name = raw_metric
+
+    out_summary = Path(args.out_summary) if args.out_summary else Path(f"results/tables/posterior_summary_{canonical_name}.csv")
+    out_traces = Path(args.out_traces) if args.out_traces else Path(f"results/traces/mcmc_traces_{canonical_name}.npz")
 
     out_summary.parent.mkdir(parents=True, exist_ok=True)
     out_traces.parent.mkdir(parents=True, exist_ok=True)
 
     print("=" * 70)
-    print(f"Hierarchical Bayesian NUTS Sampling: Target Metric = {metric.upper()}")
+    print(f"Hierarchical Bayesian NUTS Sampling: Target Metric = {canonical_name.upper()} (column: {metric_col})")
     print(f"Engine: PyMC v{pm.__version__} | ArviZ v{az.__version__}")
     print(f"Chains: {args.chains} | Draws: {args.draws} | Tuning: {args.tune}")
     print("=" * 70)
 
-    df = pd.read_csv(feat_path)
     idata, summary_df = fit_bayesian_model(
         df=df,
-        target_metric=metric,
+        target_metric=metric_col,
         draws=args.draws,
         tune=args.tune,
         chains=args.chains,
     )
 
-    # Save summary table
+    # Save canonical summary table
     summary_df.to_csv(out_summary, index=False)
     print(f"\n✓ Saved posterior summary table: {out_summary}")
+
+    # If pef, also maintain posterior_summary_bpf.csv for backward compatibility
+    if canonical_name == "pef":
+        bpf_summary = Path("results/tables/posterior_summary_bpf.csv")
+        summary_df.to_csv(bpf_summary, index=False)
+        print(f"✓ Mirrored to legacy path: {bpf_summary}")
 
     # Save posterior traces
     posterior_dict = {}
@@ -303,7 +331,12 @@ def main():
     np.savez_compressed(out_traces, **posterior_dict)
     print(f"✓ Saved compressed posterior traces: {out_traces}")
 
-    print_summary_table(summary_df, metric)
+    if canonical_name == "pef":
+        bpf_traces = Path("results/traces/mcmc_traces_bpf.npz")
+        np.savez_compressed(bpf_traces, **posterior_dict)
+        print(f"✓ Mirrored to legacy path: {bpf_traces}")
+
+    print_summary_table(summary_df, canonical_name)
 
 
 if __name__ == "__main__":

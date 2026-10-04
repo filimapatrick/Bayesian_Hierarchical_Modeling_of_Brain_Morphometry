@@ -25,6 +25,7 @@ import pandas as pd
 import seaborn as sns
 from scipy import stats
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def fit_logistic_failure_model(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, float]]:
     """
@@ -121,8 +122,17 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
         rate = (sub_df["is_volumetric_valid"] == 1.0).mean() * 100.0 if len(sub_df) > 0 else 0.0
         macro_rates.append(rate)
         
-    # FreeSurfer Pilot Attrition Benchmark (empirical historical results)
-    fs_rates = [34.9, 15.6, 0.0, 0.0, 14.3]
+    # FreeSurfer Pilot Attrition Benchmark (calculated from results/tables/freesurfer_qc.csv)
+    fs_qc_path = PROJECT_ROOT / "results" / "tables" / "freesurfer_qc.csv"
+    fs_rates = []
+    if fs_qc_path.exists():
+        fs_df = pd.read_csv(fs_qc_path)
+        for c in cohorts:
+            sub_fs = fs_df[fs_df["diagnosis"] == c.upper()]
+            rate = (sub_fs["qc_pass"] == True).mean() * 100.0 if len(sub_fs) > 0 else 0.0
+            fs_rates.append(rate)
+    else:
+        fs_rates = [34.9, 15.6, 0.0, 0.0, 14.3]
     
     x = np.arange(len(cohorts))
     width = 0.36

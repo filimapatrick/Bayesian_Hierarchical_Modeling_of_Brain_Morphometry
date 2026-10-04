@@ -1,0 +1,219 @@
+participant_id,diagnosis,institution_name,slice_thickness_mm,contrast_enhanced,recon_all_started,recon_all_completed,qc_pass,failure_stage,failure_reason,runtime_hours
+sub-con001,CONTROL,RSUTH Port Harcourt,1.4,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,10.63
+sub-con002,CONTROL,RSUTH Port Harcourt,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.92
+sub-con003,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.67
+sub-con004,CONTROL,Braithwaite Memorial Hospital,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,11.91
+sub-con005,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.39
+sub-con006,CONTROL,Braithwaite Memorial Hospital,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.39
+sub-con007,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,8.83
+sub-con008,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.44
+sub-con009,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,11.93
+sub-con010,CONTROL,RSUTH Port Harcourt,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.54
+sub-con011,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.25
+sub-con012,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.72
+sub-con013,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.24
+sub-con014,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.75
+sub-dem001,DEMENTIA,UPTH,1.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.0
+sub-dem003,DEMENTIA,UPTH,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.0
+sub-dem005,DEMENTIA,UPTH,1.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.67
+sub-dem006,DEMENTIA,UPTH,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.92
+sub-dem007,DEMENTIA,UPTH,3.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,10.38
+sub-dem008,DEMENTIA,UPTH,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.29
+sub-dem009,DEMENTIA,UPTH,1.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,11.37
+sub-dem010,DEMENTIA,UPTH,1.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,8.77
+sub-dem011,DEMENTIA,UPTH,1.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.61
+sub-dem012,DEMENTIA,UPTH,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.49
+sub-dem037,DEMENTIA,RSUTH,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.73
+sub-dem038,DEMENTIA,RSUTH,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.62
+sub-dem047,DEMENTIA,RSUTH Port Harcourt,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.04
+sub-epi001,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,2.67
+sub-epi002,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,2.81
+sub-epi003,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,1.88
+sub-epi004,EPILEPSY,UPTH,5.0,False,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,2.83
+sub-epi005,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,2.09
+sub-epi006,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,1.91
+sub-epi009,EPILEPSY,UPTH,1.0,True,True,False,False,pial_surface_placement,Pial surface placement failure from dural/vascular gadolinium contrast enhancement,3.41
+sub-hyd005,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.35
+sub-hyd009,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.09
+sub-hyd011,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.29
+sub-hyd012,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.96
+sub-hyd013,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.89
+sub-hyd014,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.5
+sub-hyd016,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.0
+sub-hyd021,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.59
+sub-hyd022,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.86
+sub-hyd025,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.25
+sub-hyd026,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.21
+sub-hyd027,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.86
+sub-hyd032,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.3
+sub-hyd035,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.63
+sub-hyd038,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.67
+sub-hyd039,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.1
+sub-hyd040,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.35
+sub-hyd041,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.04
+sub-hyd043,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.3
+sub-hyd048,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.23
+sub-hyd050,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.76
+sub-hyd052,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.27
+sub-hyd053,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.94
+sub-hyd054,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.11
+sub-hyd057,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.87
+sub-hyd060,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.32
+sub-hyd061,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.42
+sub-hyd065,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.23
+sub-hyd071,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.13
+sub-hyd073,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.37
+sub-hyd076,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.25
+sub-hyd077,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.67
+sub-hyd078,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.03
+sub-hyd080,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.08
+sub-hyd087,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.92
+sub-hyd090,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.38
+sub-hyd092,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.04
+sub-hyd093,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.12
+sub-hyd094,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.81
+sub-hyd096,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.1
+sub-hyd107,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.93
+sub-hyd108,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.97
+sub-hyd110,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.03
+sub-hyd111,HYDROCEPHALUS,RSUTH,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.92
+sub-hyd112,HYDROCEPHALUS,RSUTH,4.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.37
+sub-hyd113,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.99
+sub-hyd118,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.18
+sub-hyd119,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.8
+sub-hyd121,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.33
+sub-hyd122,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.9
+sub-hyd123,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.3
+sub-hyd126,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.32
+sub-hyd129,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.97
+sub-hyd130,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.82
+sub-hyd132,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.22
+sub-hyd133,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.56
+sub-hyd134,HYDROCEPHALUS,RSUTH Port Harcourt,5.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.99
+sub-hyd135,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.94
+sub-hyd136,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.02
+sub-hyd137,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.7
+sub-hyd139,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.03
+sub-hyd140,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.59
+sub-hyd141,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.64
+sub-hyd142,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.48
+sub-hyd143,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.84
+sub-hyd144,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.97
+sub-hyd145,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.85
+sub-hyd146,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.82
+sub-hyd147,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.3
+sub-hyd148,HYDROCEPHALUS,UPTH,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.61
+sub-hyd149,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.25
+sub-hyd150,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.2
+sub-hyd151,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.46
+sub-hyd152,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.01
+sub-hyd153,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.17
+sub-hyd154,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,0.92
+sub-hyd156,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.26
+sub-hyd157,HYDROCEPHALUS,UPTH,5.0,False,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.06
+sub-hyd158,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.29
+sub-hyd159,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.09
+sub-hyd160,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,1.81
+sub-hyd161,HYDROCEPHALUS,UPTH,1.0,True,True,False,False,talairach_registration,Talairach linear/non-linear registration divergence on severe ventriculomegaly,2.19
+sub-con015,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.29
+sub-con016,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.5,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.69
+sub-con018,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.52
+sub-con020,CONTROL,INTERCONTINENTAL DIAG. CENTER,6.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.6
+sub-con021,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.3
+sub-con022,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.5,True,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.53
+sub-con023,CONTROL,INTERCONTINENTAL DIAG. CENTER,6.0,True,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.03
+sub-con025,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,True,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.49
+sub-con027,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,True,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.79
+sub-con028,CONTROL,INTERCONTINENTAL DIAG. CENTER,6.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.31
+sub-con029,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.5,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.33
+sub-con031,CONTROL,INTERCONTINENTAL DIAG. CENTER,6.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.44
+sub-con032,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.22
+sub-con033,CONTROL,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.53
+sub-con034,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.29
+sub-con035,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.78
+sub-con036,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.51
+sub-con037,CONTROL,Braithwaite Memorial Hospital,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,10.42
+sub-con038,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.87
+sub-con039,CONTROL,Braithwaite Memorial Hospital,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,10.34
+sub-con040,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.55
+sub-con041,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.03
+sub-con042,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,10.57
+sub-con043,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.73
+sub-con044,CONTROL,Braithwaite Memorial Hospital,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.7
+sub-con045,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.94
+sub-con046,CONTROL,RSUTH Port Harcourt,4.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,11.33
+sub-con047,CONTROL,RSUTH Port Harcourt,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.98
+sub-dem048,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.27
+sub-dem049,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.6
+sub-dem050,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.15
+sub-dem051,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.86
+sub-dem052,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.64
+sub-dem053,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.25
+sub-dem054,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.95
+sub-dem055,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.15
+sub-dem056,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.89
+sub-dem057,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.82
+sub-dem058,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,4.16
+sub-dem059,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.15
+sub-dem060,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.31
+sub-dem061,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.56
+sub-dem062,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.14
+sub-dem063,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.47
+sub-dem064,DEMENTIA,Life Bridge,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.49
+sub-dem065,DEMENTIA,Life Bridge,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.21
+sub-dem066,DEMENTIA,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.21
+sub-dem067,DEMENTIA,Life Bridge,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.95
+sub-dem068,DEMENTIA,Life Bridge,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.74
+sub-dem070,DEMENTIA,Life Bridge,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.76
+sub-dem071,DEMENTIA,Life Bridge,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.37
+sub-dem072,DEMENTIA,Life Bridge,3.5,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.0
+sub-dem073,DEMENTIA,Braithwaite Memorial Hospital,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.61
+sub-dem074,DEMENTIA,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.1
+sub-dem075,DEMENTIA,Life Bridge,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.33
+sub-dem076,DEMENTIA,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.54
+sub-dem077,DEMENTIA,Life Bridge,5.0,False,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,2.88
+sub-dem078,DEMENTIA,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,3.0,True,True,True,True,completed,Passes automated surface reconstruction and visual audit,9.25
+sub-dem079,DEMENTIA,RSUTH Port Harcourt,4.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,3.24
+sub-dem080,DEMENTIA,RSUTH Port Harcourt,5.0,True,True,False,False,cortical_ribbon_parcellation,Cortical parcellation failure & partial volume tissue inversion,1.97
+sub-pd001,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.61
+sub-pd002,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,11.24
+sub-pd003,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.72
+sub-pd004,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.63
+sub-pd005,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.98
+sub-pd006,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.59
+sub-pd007,PARKINSON,INTERCONTINENTAL DIAG. CENTER,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.97
+sub-pd008,PARKINSON,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,10.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.89
+sub-pd010,PARKINSON,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,10.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.84
+sub-pd011,PARKINSON,Life Bridge,5.0,True,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.52
+sub-pd012,PARKINSON,LIFEBRIDGE MEDICAL DIAGNOSTICS LTD,10.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.79
+sub-pd013,PARKINSON,RSUTH Port Harcourt,5.0,True,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.34
+sub-pd014,PARKINSON,RSUTH Port Harcourt,4.0,True,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.3
+sub-pd015,PARKINSON,RSUTH Port Harcourt,4.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.81
+sub-pd016,PARKINSON,Braithwaite Memorial Hospital,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.56
+sub-pd017,PARKINSON,RSUTH Port Harcourt,4.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.93
+sub-pd018,PARKINSON,Braithwaite Memorial Hospital,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.93
+sub-pd019,PARKINSON,Braithwaite Memorial Hospital,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.48
+sub-pd020,PARKINSON,RSUTH Port Harcourt,5.0,False,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.98
+sub-pd021,PARKINSON,RSUTH Port Harcourt,5.0,True,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,1.99
+sub-pd022,PARKINSON,RSUTH Port Harcourt,4.0,True,True,False,False,subcortical_boundary_extraction,Subcortical boundary hallucination and self-intersection on 4.0-5.0mm slices,2.63
+sub-con048,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.53
+sub-con049,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.51
+sub-con050,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,3.3,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.95
+sub-con051,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.5,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.87
+sub-con052,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,3.3,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,8.98
+sub-con053,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.62
+sub-con054,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,3.3,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,13.62
+sub-con055,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.78
+sub-con056,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.22
+sub-con057,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.46
+sub-con058,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,4.5,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.28
+sub-con059,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.21
+sub-con060,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.62
+sub-con061,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.63
+sub-con062,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.0
+sub-con063,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.9
+sub-con064,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.78
+sub-con065,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,4.5,False,True,True,True,completed,Passes automated surface reconstruction and visual audit,12.56
+sub-con066,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,1.82
+sub-con067,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,2.05
+sub-con068,CONTROL,Aminu Kano Teaching Hospital / NKDC Kano,5.0,False,True,False,False,topology_fixer,Topology defects and self-intersections on thick anisotropic slices,3.14

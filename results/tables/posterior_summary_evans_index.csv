@@ -16,5 +16,7 @@ gamma_IDC,-0.046,0.009,-0.064,-0.027,1.0,6797.0,4202.0
 gamma_LifeBridge,-0.016,0.016,-0.047,0.015,1.0,6737.0,4868.0
 gamma_RSUTH,0.066,0.008,0.051,0.08,1.0,5901.0,5252.0
 gamma_UPTH,-0.038,0.009,-0.055,-0.021,1.0,6489.0,5002.0
-ICC_disorder (Disorder Share),0.039,0.068,0.0,0.172,1.0,2186.0,2612.0
-ICC_site (Site-Level Variance Fraction),0.688,0.122,0.451,0.902,1.0,2913.0,4053.0
+ICC_disorder (Disorder Share - 1mm Ref),0.039,0.068,0.0,0.172,1.0,2186.0,2612.0
+ICC_site (Site Variance Fraction - 1mm Ref),0.688,0.122,0.451,0.902,1.0,2913.0,4053.0
+ICC_disorder_clinical (Cohort Average Disorder Share),0.032,0.058,0.0,0.141,1.0,2149.0,2586.0
+ICC_site_clinical (Cohort Average Site Variance Fraction),0.564,0.126,0.319,0.796,1.0,2622.0,3645.0

@@ -268,12 +268,16 @@ def generate_figures(
     # Panel A: Posterior Variance Partitioning Stacked Bar (ICC)
     ax4a = axes4[0]
     
-    # Extract dynamic ICC values if available
+    # Extract dynamic ICC values if available (using clinical cohort average heteroskedastic ICC)
     def get_icc(df_sum):
-        site_row = df_sum[df_sum["Parameter"].str.contains("ICC_site", case=False, na=False)]
-        dis_row = df_sum[df_sum["Parameter"].str.contains("ICC_disorder", case=False, na=False)]
+        site_row = df_sum[df_sum["Parameter"].str.contains("ICC_site_clinical", case=False, na=False)]
+        if site_row.empty:
+            site_row = df_sum[df_sum["Parameter"].str.contains("ICC_site", case=False, na=False)]
+        dis_row = df_sum[df_sum["Parameter"].str.contains("ICC_disorder_clinical", case=False, na=False)]
+        if dis_row.empty:
+            dis_row = df_sum[df_sum["Parameter"].str.contains("ICC_disorder", case=False, na=False)]
         s_icc = float(site_row["Mean"].iloc[0]) * 100.0 if not site_row.empty else 50.0
-        d_icc = float(dis_row["Mean"].iloc[0]) * 100.0 if not dis_row.empty else 2.0
+        d_icc = float(dis_row["Mean"].iloc[0]) * 100.0 if not dis_row.empty else 3.0
         r_icc = max(0.0, 100.0 - s_icc - d_icc)
         return s_icc, d_icc, r_icc
         
@@ -381,14 +385,16 @@ def main():
     df_sens.to_csv(args.sensitivity_csv, index=False)
     print(f"✓ Saved sensitivity analysis table: {args.sensitivity_csv}")
 
-    # Load BPF posterior summary for Figure 3
-    bpf_path = PROJECT_ROOT / "results" / "tables" / "posterior_summary_bpf.csv"
-    if bpf_path.exists():
-        sum_bpf = pd.read_csv(bpf_path)
+    # Load PEF posterior summary for Figure 3
+    pef_path = PROJECT_ROOT / "results" / "tables" / "posterior_summary_pef.csv"
+    if not pef_path.exists():
+        pef_path = PROJECT_ROOT / "results" / "tables" / "posterior_summary_bpf.csv"
+    if pef_path.exists():
+        sum_bpf = pd.read_csv(pef_path)
     else:
-        print("  -> Generating BPF summary for visualization...")
-        _, sum_bpf = fit_bayesian_model(df_valid, target_metric="bpf", draws=1000, tune=500, chains=4)
-        sum_bpf.to_csv(bpf_path, index=False)
+        print("  -> Generating PEF summary for visualization...")
+        _, sum_bpf = fit_bayesian_model(df_valid, target_metric="pef", draws=1000, tune=500, chains=4)
+        sum_bpf.to_csv(pef_path, index=False)
 
     # 3. Generate Publication Figures 3 & 4
     print("\nRendering Publication Vector Figures 3 & 4...")
