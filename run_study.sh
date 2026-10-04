@@ -217,6 +217,7 @@ from pathlib import Path
 artifacts = [
     # Tables
     ("results/tables/macro_features.csv", "Table: Macro-Morphometric Cohort Features"),
+    ("results/tables/pipeline_attrition_comparison.csv", "Table: Exp 2 FreeSurfer Attrition Comparison"),
     ("results/tables/posterior_summary_bpf.csv", "Table: BPF MCMC Posterior Summary"),
     ("results/tables/posterior_summary_vbr.csv", "Table: VBR MCMC Posterior Summary"),
     ("results/tables/posterior_summary_evans_index.csv", "Table: Evans Index MCMC Posterior Summary"),

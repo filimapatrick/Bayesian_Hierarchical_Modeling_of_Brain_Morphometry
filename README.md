@@ -577,26 +577,26 @@ python modeling/sensitivity_analysis.py \
 
 ## 8. Empirical Findings from the Nigerian Cohort
 
-The MCMC posterior estimates directly validate the core hypotheses of this investigation:
+The PyMC 5.12 NUTS posterior estimates directly validate the core hypotheses of this investigation:
 
 ```
-=====================================================================================
-EMPIRICAL POSTERIOR PARAMETER SUMMARY ACROSS N=209 VALID NIGERIAN SCANS
-=====================================================================================
-Biomarker Target    Slice Noise Scale (λ)   Contrast Effect (δ)     Scanner Share (ICC_site)
--------------------------------------------------------------------------------------
-BPF                 0.1127 [0.037, 0.186]   +0.0333 [0.015, 0.052]  49.6% [23.4%, 80.0%]
-VBR                 0.0162 [-0.052, 0.079]  +0.0021 [-0.001, 0.005]  4.2%  [0.05%, 21.0%]
-Evans' Index        0.1036 [0.038, 0.165]   +0.0055 [-0.014, 0.025] 59.4% [33.4%, 83.0%]
-=====================================================================================
+===================================================================================================
+EMPIRICAL POSTERIOR PARAMETER SUMMARY ACROSS N=209 VALID NIGERIAN SCANS (PyMC 5.12 NUTS)
+===================================================================================================
+Biomarker Target    Slice Noise Scale (λ)   Contrast Effect (δ)     Site Variance Frac. (ICC_site)
+---------------------------------------------------------------------------------------------------
+PEF (BPF Envelope)  0.1060 [0.034, 0.179]   +0.0310 [0.013, 0.050]  61.5% [34.3%, 88.4%]
+Evans' Index        0.0930 [0.026, 0.156]   +0.0070 [-0.011, 0.027] 68.8% [45.1%, 90.2%]
+VBR                 0.0140 [-0.048, 0.078]  +0.0020 [-0.002, 0.005]  8.6% [ 0.0%, 31.0%]
+===================================================================================================
 ```
 
 1. **Slice Thickness Quantifiably Drives Uncertainty ($\lambda > 0$):**  
-   For both BPF ($\lambda = 0.1127$, $95\%$ CrI $[0.0368, 0.1865]$) and Evans' Index ($\lambda = 0.1036$, $95\%$ CrI $[0.0384, 0.1647]$), the posterior distribution of $\lambda$ excludes zero ($P(\lambda > 0) > 99.8\%$). Residual measurement noise expands by ~10–11% per additional millimeter of slice thickness.
-2. **Gadolinium Contrast Artificially Elevates BPF ($\delta = +0.0333$):**  
-   Post-contrast scans exhibit a systematic $+3.3\%$ shift in apparent Brain Parenchymal Fraction ($95\%$ CrI $[+0.0147, +0.0518]$) due to contrast enhancement of cerebral parenchyma and dural vasculature. Classical pipelines without contrast adjustment misinterpret this technical artifact as biological tissue volume.
-3. **Scanner & Site Variance Dominates Global Raw Measures ($\text{ICC}_{\text{site}} \approx 50-60\%$):**  
-   Site variance accounts for **$49.6\%$ of total variance in BPF** and **$59.4\%$ in Evans' Index**. This proves that unadjusted comparisons across hospital archives reflect scanner hardware rather than neurology, demonstrating the necessity of hierarchical modeling and sensitivity analysis.
+   For both PEF ($\lambda = 0.1060$, $95\%$ HDI $[0.0340, 0.1790]$) and Evans' Index ($\lambda = 0.0930$, $95\%$ HDI $[0.0260, 0.1560]$), the posterior distribution of $\lambda$ strictly excludes zero ($P(\lambda > 0) > 99.8\%$). Residual measurement noise expands by ~9.3–10.6% per additional millimeter of slice thickness.
+2. **Gadolinium Contrast Artificially Elevates PEF ($\delta = +0.0310$):**  
+   Post-contrast scans exhibit a systematic $+3.1\%$ shift in apparent Parenchymal Envelope Fraction ($95\%$ HDI $[+0.0130, +0.0500]$) due to contrast enhancement of cerebral parenchyma and dural vasculature. Classical pipelines without contrast adjustment misinterpret this technical artifact as biological tissue volume.
+3. **Site-Level Clustering Dominates Global Raw Measures ($\text{ICC}_{\text{site}} \approx 61.5\% - 68.8\%$):**  
+   Site-level variance accounts for **$61.5\%$ of total modeled variance in PEF** and **$68.8\%$ in Evans' Index**. This reflects the composite bundling of scanner hardware, acquisition protocols, institutional patient referral mix, and operator choices, completely dwarfing raw diagnostic differences ($\text{ICC}_{\text{disorder}} \approx 3.9\% - 5.8\%$) and demonstrating the necessity of hierarchical modeling and sensitivity analysis.
 
 ---
 

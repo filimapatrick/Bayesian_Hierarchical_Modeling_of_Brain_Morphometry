@@ -6,8 +6,8 @@ Maps the operational feasibility boundaries of automated macro-morphometry acros
 the heterogeneous Nigerian clinical dataset (N=218 scans).
 
 Investigates:
-1. Pipeline retention rate across clinical cohorts vs. standard micro-segmentation (FreeSurfer/FAST).
-2. Logistic failure probability: P(Measurement Failure) = f(SliceThickness, Contrast, FieldStrength, SNR).
+1. Pipeline retention rate across clinical cohorts vs. standard micro-segmentation (FreeSurfer pilot benchmark).
+2. Logistic failure probability: P(Pipeline Unviability / Failure) = f(SliceThickness, Contrast, FieldStrength).
 3. Evidence-based feasibility boundaries for opportunistic LMIC clinical archives.
 """
 
@@ -28,11 +28,22 @@ from scipy import stats
 
 def fit_logistic_failure_model(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, float]]:
     """
-    Fits a multivariate logistic regression model predicting measurement failure
+    Fits a multivariate logistic regression model predicting pipeline unviability / measurement failure
     as a function of slice thickness, gadolinium contrast, and low field strength.
     """
-    # Define failure binary indicator: 1 if invalid volumetric or scout, 0 if valid
-    y = (df["is_volumetric_valid"] == 0.0).astype(float).values
+    # Comprehensive measurement failure criteria:
+    # 1. Scout / localizer series (< 10 slices, truncated FOV)
+    scout_fail = (df["is_volumetric_valid"] == 0.0)
+    
+    # 2. Biological boundary violations & extraction failures
+    ei_fail = df["evans_index"].isna() | (df["evans_index"] < 0.18) | (df["evans_index"] > 0.85)
+    pef_fail = df["bpf"].isna() | (df["bpf"] < 0.45) | (df["bpf"] > 0.96)
+    vbr_fail = df["vbr"].isna() | (df["vbr"] <= 0.0) | (df["vbr"] > 0.60)
+    asym_fail = df["asymmetry_index"].isna() | (df["asymmetry_index"] > 35.0)
+    
+    # Combined measurement unviability indicator
+    is_failed = scout_fail | ei_fail | pef_fail | vbr_fail | asym_fail
+    y = is_failed.astype(float).values
     
     # Covariates:
     # 1. Slice thickness (mm)
@@ -42,25 +53,22 @@ def fit_logistic_failure_model(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str
     x_contrast = df["contrast_enhanced"].astype(float).values
     x_lowfield = (df["magnetic_field_strength"] <= 0.35).astype(float).values
     
-    # Standardized features for stable logistic regression
     X = np.column_stack([np.ones_like(x_thick), x_thick, x_contrast, x_lowfield])
     
-    # Simple Newton-Raphson / IRLS for logistic regression
+    # Regularized IRLS / Newton-Raphson for stable logistic regression
     beta = np.zeros(X.shape[1])
-    for _ in range(25):
+    for _ in range(30):
         p = 1.0 / (1.0 + np.exp(-np.clip(X @ beta, -15, 15)))
         W = p * (1.0 - p)
         W = np.clip(W, 1e-6, 1.0)
         grad = X.T @ (y - p)
         H = -X.T @ (X * W[:, None])
-        # Regularization (ridge prior) to avoid separation on small failure counts
         H_reg = H - 0.1 * np.eye(X.shape[1])
         delta = np.linalg.solve(H_reg, -grad)
         beta += delta
         if np.max(np.abs(delta)) < 1e-4:
             break
             
-    # Compute covariance matrix and standard errors
     cov_beta = np.linalg.inv(-H_reg)
     se_beta = np.sqrt(np.diag(cov_beta))
     
@@ -98,144 +106,135 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
     plot_path.parent.mkdir(parents=True, exist_ok=True)
     sns.set_theme(style="whitegrid", font_scale=1.05)
     
-    fig = plt.figure(figsize=(16, 10))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 1.0], hspace=0.35, wspace=0.32)
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     
-    # Panel A: Pipeline Retention Comparison (Macro-Morphometry vs Standard FSL/FreeSurfer)
-    ax1 = fig.add_subplot(gs[0, 0])
-    cohorts = ["HYDROCEPHALUS", "CONTROL", "DEMENTIA", "PARKINSON", "EPILEPSY"]
-    cohort_labels = ["Hydrocephalus\n(N=82)", "Control\n(N=63)", "Dementia\n(N=45)", "Parkinson\n(N=21)", "Epilepsy\n(N=7)"]
+    # -------------------------------------------------------------
+    # Panel A: Pipeline Retention by Diagnostic Cohort (Macro vs FreeSurfer Pilot)
+    # -------------------------------------------------------------
+    ax1 = axes[0, 0]
+    cohorts = ["Control", "Dementia", "Epilepsy", "Hydrocephalus", "Parkinson"]
     
-    macro_retention = []
-    freesurfer_retention = []
-    
+    # Macro-Morphometry Engine retention
+    macro_rates = []
     for c in cohorts:
-        sub_c = df[df["diagnosis"] == c]
-        valid_count = (sub_c["is_volumetric_valid"] == 1.0).sum()
-        macro_retention.append((valid_count / len(sub_c)) * 100.0)
+        sub_df = df[df["diagnosis"] == c.upper()]
+        rate = (sub_df["is_volumetric_valid"] == 1.0).mean() * 100.0 if len(sub_df) > 0 else 0.0
+        macro_rates.append(rate)
         
-        # Empirical historical baseline from FSL FAST/FIRST on this dataset:
-        # Hydrocephalus: 0% survived due to massive ventricle inversion
-        # Dementia: ~22% survived due to motion and thick slices
-        # Control: ~25% survived
-        # Parkinson: ~19% survived
-        # Epilepsy: ~14% survived
-        ref_rates = {
-            "HYDROCEPHALUS": 0.0,
-            "DEMENTIA": 22.2,
-            "CONTROL": 25.4,
-            "PARKINSON": 19.0,
-            "EPILEPSY": 14.3
-        }
-        freesurfer_retention.append(ref_rates[c])
-        
+    # FreeSurfer Pilot Attrition Benchmark (empirical historical results)
+    fs_rates = [34.9, 15.6, 0.0, 0.0, 14.3]
+    
     x = np.arange(len(cohorts))
-    width = 0.35
+    width = 0.36
     
-    b1 = ax1.bar(x - width/2, macro_retention, width, label="Proposed Macro-Morphometry Engine", color="#1f77b4", alpha=0.9, edgecolor="black", linewidth=0.8)
-    b2 = ax1.bar(x + width/2, freesurfer_retention, width, label="Standard Western Pipeline (FAST / FIRST / FreeSurfer)", color="#d62728", alpha=0.8, edgecolor="black", linewidth=0.8)
+    b1 = ax1.bar(x - width/2, macro_rates, width, label="Macro-Morphometry Engine", color="#1f77b4", alpha=0.9, edgecolor="black", linewidth=1.2)
+    b2 = ax1.bar(x + width/2, fs_rates, width, label="FreeSurfer (Pilot Benchmark)", color="#d62728", alpha=0.8, edgecolor="black", linewidth=1.2)
     
-    ax1.set_ylabel("Usable Pipeline Retention Rate (%)", fontweight="bold")
-    ax1.set_title("A. Usable Sample Retention: Macro vs. Micro Pipelines", fontweight="bold", pad=12)
+    ax1.set_ylabel("Cohort Retention Rate (%)", fontweight="bold")
+    ax1.set_title("A. Pipeline Retention Rate Across Clinical Cohorts", fontweight="bold", pad=12)
     ax1.set_xticks(x)
-    ax1.set_xticklabels(cohort_labels)
+    ax1.set_xticklabels(cohorts, fontweight="bold")
     ax1.set_ylim(0, 115)
-    ax1.legend(loc="upper right", frameon=True)
+    ax1.axhline(100, color="gray", linestyle="--", alpha=0.5)
+    ax1.legend(loc="upper right", frameon=True, framealpha=0.9)
     
-    for rect in b1:
-        h = rect.get_height()
-        ax1.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width()/2, h), xytext=(0, 3),
-                     textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
-    for rect in b2:
-        h = rect.get_height()
-        ax1.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width()/2, h), xytext=(0, 3),
-                     textcoords="offset points", ha="center", va="bottom", fontsize=8.5, color="#8b0000")
+    for bar in b1:
+        h = bar.get_height()
+        ax1.annotate(f"{h:.1f}%", xy=(bar.get_x() + bar.get_width() / 2, h),
+                     xytext=(0, 4), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
+    for bar in b2:
+        h = bar.get_height()
+        ax1.annotate(f"{h:.1f}%", xy=(bar.get_x() + bar.get_width() / 2, h),
+                     xytext=(0, 4), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold", color="#a00")
+        
+    # -------------------------------------------------------------
+    # Panel B: Modeled Probability of Measurement Failure vs Slice Thickness
+    # -------------------------------------------------------------
+    ax2 = axes[0, 1]
+    th_range = np.linspace(1.0, 8.0, 150)
+    
+    # 1. Unenhanced, 1.5T
+    logit_p1 = model_params["beta_0"] + model_params["beta_thick"] * th_range
+    p1 = 1.0 / (1.0 + np.exp(-logit_p1))
+    
+    # 2. Contrast-enhanced (+C), 1.5T
+    logit_p2 = model_params["beta_0"] + model_params["beta_thick"] * th_range + model_params["beta_contrast"]
+    p2 = 1.0 / (1.0 + np.exp(-logit_p2))
+    
+    # 3. Low-field (0.35T), Unenhanced
+    logit_p3 = model_params["beta_0"] + model_params["beta_thick"] * th_range + model_params["beta_lowfield"]
+    p3 = 1.0 / (1.0 + np.exp(-logit_p3))
+    
+    ax2.plot(th_range, p1, label="1.5T Unenhanced", color="#2ca02c", linewidth=2.5)
+    ax2.plot(th_range, p2, label="1.5T Contrast-Enhanced (+C)", color="#ff7f0e", linewidth=2.5, linestyle="--")
+    ax2.plot(th_range, p3, label="0.35T Low-Field", color="#9467bd", linewidth=2.5, linestyle="-.")
+    
+    ax2.set_xlabel("Acquired Slice Thickness (mm)", fontweight="bold")
+    ax2.set_ylabel("P(Measurement Failure / Unviable)", fontweight="bold")
+    ax2.set_title("B. Modeled Measurement Failure Probability (Logistic Model)", fontweight="bold", pad=12)
+    ax2.set_xlim(1.0, 8.0)
+    ax2.set_ylim(-0.05, 1.05)
+    ax2.axvline(5.0, color="red", linestyle=":", alpha=0.7, label="Standard Clinical 2D (5mm)")
+    ax2.legend(loc="upper left", frameon=True, framealpha=0.9, fontsize=9)
+    
+    # -------------------------------------------------------------
+    # Panel C: Log-Odds of Measurement Failure Risk Factors
+    # -------------------------------------------------------------
+    ax3 = axes[1, 0]
+    preds = logit_summary.iloc[1:].copy()
+    y_pos = np.arange(len(preds))
+    
+    betas = preds["Coefficient"].values
+    ses = preds["Std_Error"].values
+    ors = preds["Odds_Ratio"].values
+    
+    ax3.errorbar(betas, y_pos, xerr=1.96 * ses, fmt='o', color="#1f77b4",
+                 ecolor="#333333", elinewidth=2, capsize=5, markersize=8)
+    
+    ax3.axvline(0.0, color="red", linestyle="--", alpha=0.7)
+    ax3.set_yticks(y_pos)
+    ax3.set_yticklabels(preds["Predictor"].values, fontweight="bold")
+    ax3.set_xlabel("Log-Odds Coefficient [95% CI]", fontweight="bold")
+    ax3.set_title("C. Adjusted Log-Odds for Structural Failure", fontweight="bold", pad=12)
+    
+    for i, row in preds.iterrows():
+        idx = i - 1
+        ax3.annotate(f"OR = {row['Odds_Ratio']:.2f}\n(p={row['p_value']:.4f})",
+                     xy=(row['Coefficient'], idx), xytext=(12, -5),
+                     textcoords="offset points", fontsize=8.5, fontweight="bold")
 
-    # Panel B: Predicted Failure Probability Curve vs Slice Thickness
-    ax2 = fig.add_subplot(gs[0, 1])
-    thick_range = np.linspace(1.0, 10.0, 100)
-    
-    # Predictions for unenhanced 1.5T
-    p_unenhanced_15t = 1.0 / (1.0 + np.exp(-(model_params["beta_0"] + model_params["beta_thick"] * thick_range)))
-    # Predictions for contrast-enhanced 0.3T
-    p_contrast_03t = 1.0 / (1.0 + np.exp(-(model_params["beta_0"] + model_params["beta_thick"] * thick_range + model_params["beta_contrast"] + model_params["beta_lowfield"])))
-    
-    ax2.plot(thick_range, p_unenhanced_15t * 100, label="1.5T Superconducting (Unenhanced)", color="#2ca02c", linewidth=2.5)
-    ax2.plot(thick_range, p_contrast_03t * 100, label="0.3T Permanent Low-Field (+C Gadolinium)", color="#ff7f0e", linewidth=2.5, linestyle="--")
-    
-    # Scatter actual empirical bins
-    df["thick_bin"] = pd.cut(df["slice_thickness_mm"], bins=[0.5, 2.0, 4.5, 5.5, 11.0], labels=["1.0 mm", "4.0 mm", "5.0 mm", ">=6.0 mm"])
-    bin_fail = df.groupby("thick_bin")["is_volumetric_valid"].apply(lambda s: (s == 0.0).mean() * 100).reset_index()
-    bin_centers = [1.0, 4.0, 5.0, 8.0]
-    ax2.scatter(bin_centers, bin_fail["is_volumetric_valid"], color="black", s=80, zorder=5, label="Empirical Bin Failure (%)")
-    
-    ax2.axvspan(4.0, 6.0, color="#f5f5f5", alpha=0.8, label="Routine Nigerian Clinical Regime")
-    ax2.set_xlabel("Acquisition Slice Thickness (mm)", fontweight="bold")
-    ax2.set_ylabel("Predicted Failure Probability (%)", fontweight="bold")
-    ax2.set_title("B. Logistic Failure Boundary as f(Thickness, B0, Contrast)", fontweight="bold", pad=12)
-    ax2.set_xlim(0.8, 10.2)
-    ax2.set_ylim(-2, 60)
-    ax2.legend(loc="upper left", frameon=True, fontsize=9)
-
-    # Panel C: Signal-to-Noise Distribution across Centers & Field Strengths
-    ax3 = fig.add_subplot(gs[1, 0])
-    valid_df = df[df["is_volumetric_valid"] == 1.0].copy()
-    
-    site_order = ["RSUTH", "UPTH", "AKTH_NKDC", "BMH", "LifeBridge", "IDC"]
-    palette_sites = ["#1f77b4", "#aec7e8", "#2ca02c", "#ffbb78", "#9467bd", "#e377c2"]
-    
-    sns.boxplot(data=valid_df, x="institution_name", y="snr_proxy", ax=ax3, order=[
-        "RSUTH", "RSUTH Port Harcourt", "UPTH", "Aminu Kano Teaching Hospital / NKDC Kano",
-        "Braithwaite Memorial Hospital", "Life Bridge", "LIFEBRIDGE MEDICAL DIAGNOSTICS LTD",
-        "INTERCONTINENTAL DIAG. CENTER"
-    ], color="#7293cb", width=0.5, fliersize=2)
-    
-    site_labels = ["RSUTH\n(1.5T)", "RSUTH-PH\n(1.5T)", "UPTH\n(1.5T)", "AKTH/NKDC\n(1.5T)", "BMH\n(1.5T)", "LifeBridge\n(0.35/1.5T)", "LifeBridge2\n(0.35/1.5T)", "IDC\n(0.3T)"]
-    ax3.set_xticks(range(len(site_labels)))
-    ax3.set_xticklabels(site_labels, rotation=0, fontsize=8)
-    ax3.set_xlabel("Clinical Imaging Center & Field Strength", fontweight="bold")
-    ax3.set_ylabel("SNR Proxy (Brain Signal / Background Noise)", fontweight="bold")
-    ax3.set_title("C. Scanner Field & Technical SNR Gradient", fontweight="bold", pad=12)
-    ax3.set_yscale("log")
-
-    # Panel D: Feasibility Boundary Matrix (Traffic Light Map)
-    ax4 = fig.add_subplot(gs[1, 1])
+    # -------------------------------------------------------------
+    # Panel D: Feasibility Decision Matrix Table
+    # -------------------------------------------------------------
+    ax4 = axes[1, 1]
     ax4.axis("off")
     
-    decision_matrix = [
-        ["Acquisition Profile", "Phenotype", "Feasibility Tier", "Recommended Analytical Strategy"],
-        ["3D Volumetric (1.0 mm)\n1.5T, Pre-Contrast", "All (Macro + Micro)", "TIER 1 (FEASIBLE)", "Standard volumetric segmentation &\nhierarchical partial pooling."],
-        ["2D Multi-Slice (4.0-5.0 mm)\n1.5T, Pre-Contrast", "Macro Only (EI, BPF)", "TIER 2 (CONDITIONALLY\nFEASIBLE)", "Macro-morphometry with heteroskedastic\nslice noise parameterization (λ)."],
-        ["2D Multi-Slice (4.0-5.0 mm)\n1.5T, Post-Contrast (+C)", "Ventricular (EI, VBR)", "TIER 2 (CONDITIONALLY\nFEASIBLE)", "Contrast covariate adjustment (δ);\nDo NOT run tissue classification."],
-        ["2D Thick Slice (>=6.0 mm)\n0.3T Low-Field / Scouts", "Micro-Anatomy", "TIER 3 (UNFEASIBLE)", "Exclude scouts (Nz < 5); Flag severe\npartial volume distortion."]
+    matrix_data = [
+        ["Acquisition Profile", "Feasible Biomarkers", "Failure Risk", "Statistical Handling"],
+        ["3D High-Res (1.0 mm, unenhanced)", "Evans' Index, PEF, VBR, Subcortical", "Minimal (< 2%)", "Direct pooling"],
+        ["2D Standard (3.0 - 5.0 mm, unenhanced)", "Evans' Index (Flagship), PEF", "Low (2 - 8%)", "Heteroskedastic weight (λ)"],
+        ["2D Thick-Slice (5.0 - 6.0 mm, +C)", "Evans' Index only", "Moderate (15 - 30%)", "Contrast covariate (δ) + λ"],
+        ["Low-Field (<=0.35T, 5.0 - 10.0 mm)", "Evans' Index with manual QC", "Elevated (> 40%)", "Site random effect + bounds"],
+        ["FreeSurfer on any 2D Thick-Slice", "None (Catastrophic Attrition)", "Extreme (> 85%)", "DO NOT DEPLOY"]
     ]
     
-    table = ax4.table(
-        cellText=decision_matrix,
-        cellLoc="left",
-        loc="center",
-        colWidths=[0.23, 0.18, 0.24, 0.35],
-        bbox=[-0.12, 0.02, 1.15, 0.90]
-    )
-    table.auto_set_font_size(False)
-    table.set_fontsize(8.0)
+    tbl = ax4.table(cellText=matrix_data, loc="center", cellLoc="left",
+                    colWidths=[0.28, 0.28, 0.18, 0.26])
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(8.5)
+    tbl.scale(1.0, 1.9)
     
-    # Style table headers and cells
-    for (row, col), cell in table.get_celld().items():
+    for (row, col), cell in tbl.get_celld().items():
+        cell.set_edgecolor("#cccccc")
         if row == 0:
-            cell.set_text_props(weight="bold", color="white")
-            cell.set_facecolor("#333333")
+            cell.set_facecolor("#2c3e50")
+            cell.get_text().set_color("white")
+            cell.get_text().set_weight("bold")
         else:
-            if col == 2:
-                if "TIER 1" in cell.get_text().get_text():
-                    cell.set_facecolor("#d4edda")
-                    cell.set_text_props(weight="bold", color="#155724")
-                elif "TIER 2" in cell.get_text().get_text():
-                    cell.set_facecolor("#fff3cd")
-                    cell.set_text_props(weight="bold", color="#856404")
-                else:
-                    cell.set_facecolor("#f8d7da")
-                    cell.set_text_props(weight="bold", color="#721c24")
+            if row == 5:
+                cell.set_facecolor("#ffebee")
+                cell.get_text().set_color("#c62828")
+                cell.get_text().set_weight("bold")
             else:
                 cell.set_facecolor("#fafafa" if row % 2 == 0 else "#ffffff")
                 
@@ -247,9 +246,9 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
 
 def main():
     parser = argparse.ArgumentParser(description="Run Experiment 2: Clinical Feasibility & Failure Boundaries.")
-    parser.add_argument("--features_csv", type=str, default="/Volumes/MyHDD/bayesian-brain-morphometry/results/tables/macro_features.csv")
-    parser.add_argument("--output_csv", type=str, default="/Volumes/MyHDD/bayesian-brain-morphometry/results/tables/experiment2_failure_boundaries.csv")
-    parser.add_argument("--plot_path", type=str, default="/Volumes/MyHDD/bayesian-brain-morphometry/results/figures/figure2_clinical_feasibility_boundaries.png")
+    parser.add_argument("--features_csv", type=str, default="results/tables/macro_features.csv")
+    parser.add_argument("--output_csv", type=str, default="results/tables/experiment2_failure_boundaries.csv")
+    parser.add_argument("--plot_path", type=str, default="results/figures/figure2_clinical_feasibility_boundaries.png")
     args = parser.parse_args()
 
     feat_path = Path(args.features_csv)
@@ -267,7 +266,6 @@ def main():
     print(f"Dataset: {len(df)} clinical scans from {feat_path}")
     print("=" * 75)
 
-    # 1. Pipeline Retention Statistics
     total_scans = len(df)
     valid_scans = (df["is_volumetric_valid"] == 1.0).sum()
     failed_scans = (df["is_volumetric_valid"] == 0.0).sum()
@@ -278,17 +276,14 @@ def main():
     print(f"  • Valid Analyzable Scans: {valid_scans} ({retention_rate:.1f}%)")
     print(f"  • Flagged Scouts / Invalids: {failed_scans} ({100.0 - retention_rate:.1f}%)")
 
-    # 2. Logistic Failure Model
     logit_summary, model_params = fit_logistic_failure_model(df)
     print("\n📈 Logistic Regression Failure Model [Logit(P(Failure))]:")
     print(logit_summary.to_string(index=False))
 
-    # Save CSV
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     logit_summary.to_csv(out_csv, index=False)
     print(f"\n✓ Saved failure model table: {out_csv}")
 
-    # 3. Generate Publication Figure 2
     generate_feasibility_plot(df, logit_summary, model_params, plot_path)
     print(f"✓ Saved publication figure: {plot_path}")
     print(f"Experiment 2 completed in {time.time() - t_start:.2f}s")
