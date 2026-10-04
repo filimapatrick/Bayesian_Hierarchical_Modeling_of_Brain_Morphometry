@@ -351,18 +351,18 @@ def generate_feasibility_plot(
     
     matrix_data = [
         ["Acquisition Profile", "Feasible Biomarkers", "Posterior Failure Risk\n[Median, 95% HDI]", "Recommended\nStatistical Handling"],
-        ["3D High-Res\n(1.0 mm, 1.5T)", "Evans' Index, PEF,\nVBR, Subcortical", f"{prof1_med:.2f}%\n[{prof1_lo:.2f}%, {prof1_hi:.2f}%]", "Direct pooling"],
+        ["3D High-Res\n(1.0 mm, 1.5T)", "Evans' Index, PEF,\nVBR, Subcortical", f"{prof1_med:.2f}%\n[{prof1_lo:.2f}%, {prof1_hi:.2f}%]", "Standard modeling;\nretain covariates"],
         ["2D Standard\n(4.0 mm, 1.5T)", "Evans' Index (Flagship),\nPEF", f"{prof2_med:.2f}%\n[{prof2_lo:.2f}%, {prof2_hi:.2f}%]", "Heteroskedastic noise\nscaling (λ)"],
         ["2D Thick-Slice\n(5.0 mm, +C, 1.5T)", "Evans' Index only", f"{prof3_med:.2f}%\n[{prof3_lo:.2f}%, {prof3_hi:.2f}%]", "Contrast covariate (δ)\n+ noise scaling (λ)"],
         ["Low-Field\n(5.0 mm, 0.35T)", "Evans' Index\n(with manual QC)", f"{prof4_med:.2f}%\n[{prof4_lo:.2f}%, {prof4_hi:.2f}%]", "Institutional random\neffect + QC bounds"],
-        ["FreeSurfer Pilot\n(2D Thick-Slice)", "None\n(Catastrophic attrition)", f"{fs_fail_rate:.1f}%\n(Empirical failure)", "DO NOT DEPLOY\n(Biologically unviable)"]
+        ["FreeSurfer Pilot\n(2D Thick-Slice)", "None\n(Catastrophic attrition)", f"{fs_fail_rate:.1f}%\n(Empirical benchmark)", "Not suitable for this\nregime without adaptation"]
     ]
     
     tbl = ax4.table(cellText=matrix_data, loc="center", cellLoc="center",
-                    colWidths=[0.24, 0.26, 0.25, 0.25])
+                    colWidths=[0.24, 0.25, 0.24, 0.27])
     tbl.auto_set_font_size(False)
     tbl.set_fontsize(8.2)
-    tbl.scale(1.0, 2.2)
+    tbl.scale(1.0, 2.1)
     
     for (row, col), cell in tbl.get_celld().items():
         cell.set_edgecolor("#cccccc")
@@ -379,6 +379,12 @@ def generate_feasibility_plot(
                 cell.set_facecolor("#fafafa" if row % 2 == 0 else "#ffffff")
                 
     ax4.set_title("D. Opportunistic Clinical Neuroimaging Feasibility Matrix", fontweight="bold", pad=12)
+    ax4.text(
+        0.5, 0.04,
+        "Note: Posterior risks in rows 1–4 refer to the proposed macro-morphometry pipeline;\n"
+        "the FreeSurfer value is an independently observed empirical QC failure rate shown as an operational benchmark.",
+        transform=ax4.transAxes, ha="center", va="top", fontsize=7.6, fontstyle="italic", color="#444444"
+    )
 
     plt.savefig(plot_path, dpi=300, bbox_inches="tight")
     plt.close()
