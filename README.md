@@ -310,11 +310,11 @@ Slice Thickness    Evans' Index (%)    PEF (%)            VBR (%)            Sub
 
 - **Scanned Space:** All $N = 218$ subjects across slice thicknesses from 1.0 mm to 10.0 mm, field strengths from 0.3T to 1.5T, and contrast states (+C vs. unenhanced).
 - **Subject-Level Empirical Provenance:** Every participant's processing trajectory, runtimes, completion milestones, and exact failure stages are logged in [`results/tables/freesurfer_qc.csv`](results/tables/freesurfer_qc.csv).
-- **Prespecified Failure Criteria & Geometric Rationale:**
+- **Prespecified Failure Criteria & Geometric/Algorithmic Plausibility Rationale:**
   ```
-  Table 3A: Prespecified Quality Control Failure Bounds & Geometric Rationale
+  Table 3A: Prespecified Quality Control Failure Bounds & Geometric/Algorithmic Plausibility Rationale
   ┌─────────────────────────┬──────────────────────────┬────────────────────────────────────────────────────────┐
-  │ Metric / Component      │ Prespecified QC Bounds   │ Physiological / Geometric Failure Rationale            │
+  │ Metric / Component      │ Prespecified QC Bounds   │ Geometric & Algorithmic Plausibility Rationale         │
   ├─────────────────────────┼──────────────────────────┼────────────────────────────────────────────────────────┤
   │ Scout / Localizer Scans │ < 10 axial slices or     │ Severe field-of-view truncation; inadequate coverage   │
   │                         │ craniocaudal < 100 mm    │ for whole-brain parenchymal envelope or calvarium.     │
@@ -322,14 +322,14 @@ Slice Thickness    Evans' Index (%)    PEF (%)            VBR (%)            Sub
   │                         │                          │ ventriculomegaly reaches 0.50–0.70. Values <0.18       │
   │                         │                          │ reflect automated failure to resolve frontal horns;    │
   │                         │                          │ values >0.85 reflect segmentation bleed into calvarium.│
-  │ Parenchymal Envelope    │ < 0.45  or  > 0.96       │ Physiological envelope fraction spans 0.65–0.90.       │
-  │ Fraction (PEF)          │                          │ Values <0.45 denote catastrophic coil signal dropout;  │
-  │                         │                          │ values >0.96 indicate dilation breakdown collapsing    │
-  │                         │                          │ cranial envelope directly onto parenchymal boundary.   │
+  │ Parenchymal Envelope    │ < 0.45  or  > 0.96       │ Plausible geometric envelope fraction spans 0.65–0.90. │
+  │ Fraction (PEF)          │                          │ Values <0.45 denote catastrophic coil signal dropout   │
+  │                         │                          │ or truncation; values >0.96 indicate algorithmic       │
+  │                         │                          │ dilation breakdown collapsing envelope onto boundary.  │
   │ Ventricle-to-Brain      │ <= 0.00  or  > 0.60      │ Non-physical non-positive volume (<=0) or gross tissue │
   │ Ratio (VBR)             │                          │ threshold leak into periventricular white matter (>0.6)│
-  │ Hemispheric Asymmetry   │ > 35.0 %                 │ Typical physiological asymmetry is <5–10%. Asymmetry   │
-  │ Index (HAI)             │                          │ >35% indicates unilateral coil cutoff or extreme tilt. │
+  │ Hemispheric Asymmetry   │ > 35.0 %                 │ Expected cranial symmetry yields index <5–10%.         │
+  │ Index (HAI)             │                          │ Asymmetry >35% indicates unilateral coil cutoff/tilt.  │
   └─────────────────────────┴──────────────────────────┴────────────────────────────────────────────────────────┘
   ```
 - **Bayesian Logistic Failure Model (PyMC NUTS):**
@@ -355,8 +355,8 @@ Low Field (<=0.35T)                 +1.811 (0.614)        [+0.638, +3.017]   6.1
    While standard high-resolution pipelines (FreeSurfer) suffered catastrophic attrition—losing **85.3% of clinical scans** ($186/218$) and **100% of the hydrocephalus cohort** due to inverted tissue priors and registration divergence—our macro-morphometry engine retains **$209 / 218$ scans (95.9%)**.
 2. **Slice Thickness Increases Failure Odds ($\text{OR} = 1.644, 95\%\text{ HDI: } [1.074, 2.557]$):**  
    Each millimeter increase in slice thickness increases failure odds by $64.4\%$, with posterior log-odds strictly positive ($95\%\text{ HDI: } [+0.079, +0.943]$), directly justifying our exponential noise model ($\sigma_i = \sigma_0 e^{\lambda \cdot [h_i - 1]}$).
-3. **Contrast Increases Boundary Failure Risks ($\text{OR} = 1.948, 95\%\text{ HDI: } [0.556, 6.519]$):**  
-   Contrast-enhanced scans (+C) exhibit elevated unviability risk due to dural and vascular enhancement, establishing the necessity of contrast covariate adjustment ($\delta$).
+3. **Contrast Uncertainty on Failure Odds ($\text{OR} = 1.948, 95\%\text{ HDI: } [0.556, 6.519]$):**  
+   Contrast-enhanced scans exhibit an elevated median odds ratio of $1.948$, but the posterior interval spans 1.0 (spanning reduced to substantially increased odds), indicating substantial uncertainty in failure odds. The definitive empirical impact of contrast appears in Experiment 3 as a systematic $+3.1\%$ tissue boundary shift ($\delta_{\text{PEF}} = +0.0310$).
 4. **Low Field Regimes Surge Failure Odds ($\text{OR} = 6.117, 95\%\text{ HDI: } [1.851, 20.035]$):**  
    Scans acquired on $\le 0.35\text{T}$ scanners exhibit a sixfold increase in measurement unviability odds under low-SNR regimes.
 
@@ -659,7 +659,7 @@ VBR                 0.0140 [-0.048, 0.078]  +0.0020 [-0.002, 0.005]  8.6% [ 0.0,
 ```
 
 1. **Slice Thickness Quantifiably Drives Uncertainty ($\lambda > 0$):**  
-   For both PEF ($\lambda = 0.1060$, $95\%$ HDI $[0.0340, 0.1790]$) and Evans' Index ($\lambda = 0.0930$, $95\%$ HDI $[0.0260, 0.1560]$), the posterior distribution of $\lambda$ strictly excludes zero ($P(\lambda > 0) > 99.8\%$). Residual measurement noise expands by ~9.3–10.6% per additional millimeter of slice thickness.
+   For both PEF ($\lambda = 0.1060$, $95\%$ HDI $[0.0340, 0.1790]$) and Evans' Index ($\lambda = 0.0930$, $95\%$ HDI $[0.0260, 0.1560]$), the posterior distribution of $\lambda$ strictly excludes zero ($P(\lambda > 0) > 99.8\%$). Residual measurement standard deviation compounds exponentially: based on $100(e^\lambda - 1)\%$, residual SD expands by ~9.7% per additional millimeter for Evans' Index and ~11.2% per millimeter for PEF.
 2. **Gadolinium Contrast Artificially Elevates PEF ($\delta = +0.0310$):**  
    Post-contrast scans exhibit a systematic $+3.1\%$ shift in apparent Parenchymal Envelope Fraction ($95\%$ HDI $[+0.0130, +0.0500]$) due to contrast enhancement of cerebral parenchyma and dural vasculature. Classical pipelines without contrast adjustment misinterpret this technical artifact as biological tissue volume.
 3. **Site-Level Clustering Dominates Global Raw Measures ($\text{ICC}_{\text{site}} \approx 61.5\% - 68.8\%$):**  
@@ -667,7 +667,7 @@ VBR                 0.0140 [-0.048, 0.078]  +0.0020 [-0.002, 0.005]  8.6% [ 0.0,
 
 ### 8.1 Methodological Limitations & Prospective Considerations
 
-1. **Absence of Demographic Covariates (Age and Biological Sex):** Under retrospective hospital de-identification and legacy console archiving across Nigerian centers, patient chronological age and sex were either purged during DICOM sanitization or not digitally recorded. Because normal brain aging involves steady parenchymal atrophy and ex vacuo ventricular enlargement, unmodeled age variance is absorbed into the residual dispersion $\sigma_i^2$ and institutional intercepts $\gamma_s$. Establishing standardized demographic capture is a priority for future prospective LMIC cohorts.
+1. **Absence of Demographic Covariates (Age and Biological Sex):** Under retrospective hospital de-identification and legacy console archiving across Nigerian centers, patient chronological age and sex were either purged during DICOM sanitization or not digitally recorded. Because age and sex were unavailable, their effects remain unmeasured potential confounders. Age- and sex-related variability may contribute to residual and between-site variation, but cannot be separately identified or adjusted for by the present model. Establishing standardized demographic capture is a priority for future prospective LMIC cohorts.
 2. **Pediatric vs. Adult Hydrocephalus Pathophysiological Heterogeneity:** The hydrocephalus cohort ($N=82$) opportunistically reflects hospital neurosurgical referrals, pooling pediatric cases (where open cranial sutures and pliable fontanelles allow massive cranial expansion and extreme frontal horn splaying without acute parenchymal compression) and adult cases (where normal pressure hydrocephalus or obstructive ventriculomegaly develops inside a rigid calvarium). Although Evans' Index normalizes frontal horn span to skull diameter ($W_{\text{horns}} / D_{\text{skull}}$), developmental compliance differences between pediatric and adult crania introduce biological heterogeneity, broadening the posterior credible interval of $\beta_{\text{HYD}}$.
 3. **Validation Against Radiologist Calipers:** While automated Evans' Index is algorithmically calibrated to clinical radiologist caliper rules, formal multi-reader inter-rater agreement, Bland–Altman limits, and diagnostic cutpoint sensitivity/specificity against manual expert calipers are needed before automated measurements can be deployed for clinical triage or surgical follow-up.
 

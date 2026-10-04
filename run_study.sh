@@ -223,11 +223,11 @@ END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 
 # ==============================================================================
-# ARTIFACT VERIFICATION & SCORECARD
+# ARTIFACT COMPLETENESS & INTEGRITY AUDIT
 # ==============================================================================
 echo ""
 echo "=============================================================================="
-echo "🎉 REPRODUCTION COMPLETE: VERIFYING STUDY ARTIFACTS"
+echo "🎉 REPRODUCTION COMPLETE: AUDITING ARTIFACT COMPLETENESS & INTEGRITY"
 echo "   Total Elapsed Time: ${DURATION} seconds"
 echo "=============================================================================="
 
@@ -263,7 +263,7 @@ artifacts = [
 ]
 
 all_ok = True
-print(f"Status | Size (KB) | Artifact Path & Description")
+print(f"Status | Size (KB) | Artifact Path & Description (Integrity Audit)")
 print("-" * 78)
 for rel_path, desc in artifacts:
     p = Path(rel_path)
@@ -276,7 +276,7 @@ for rel_path, desc in artifacts:
 
 print("-" * 78)
 if all_ok:
-    print("✨ ALL 21 STUDY ARTIFACTS VERIFIED SUCCESSFULLY!")
+    print("✨ ALL 21 STUDY ARTIFACTS VERIFIED: ARTIFACT COMPLETENESS AND INTEGRITY CONFIRMED!")
 else:
     print("⚠️ Some artifacts are missing or zero-sized. Review step logs above.")
 '

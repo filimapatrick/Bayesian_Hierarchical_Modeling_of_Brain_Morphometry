@@ -173,7 +173,13 @@ def fit_logistic_failure_model(
     return summary_df, model_params, traces
 
 
-def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, model_params: Dict[str, float], plot_path: Path):
+def generate_feasibility_plot(
+    df: pd.DataFrame,
+    logit_summary: pd.DataFrame,
+    model_params: Dict[str, float],
+    traces: Dict[str, np.ndarray],
+    plot_path: Path,
+):
     """
     Renders publication Figure 2:
     Clinical Feasibility Boundaries, Failure Rates, and Pipeline Retention Contrast.
@@ -198,15 +204,17 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
         
     # FreeSurfer Pilot Attrition Benchmark (calculated from results/tables/freesurfer_qc.csv)
     fs_qc_path = PROJECT_ROOT / "results" / "tables" / "freesurfer_qc.csv"
+    if not fs_qc_path.exists():
+        raise FileNotFoundError(
+            f"FreeSurfer QC benchmark file not found at {fs_qc_path}. "
+            "Scientific reproducibility requires participant-level QC data; hard-coded fallbacks are disabled."
+        )
+    fs_df = pd.read_csv(fs_qc_path)
     fs_rates = []
-    if fs_qc_path.exists():
-        fs_df = pd.read_csv(fs_qc_path)
-        for c in cohorts:
-            sub_fs = fs_df[fs_df["diagnosis"] == c.upper()]
-            rate = (sub_fs["qc_pass"] == True).mean() * 100.0 if len(sub_fs) > 0 else 0.0
-            fs_rates.append(rate)
-    else:
-        fs_rates = [34.9, 15.6, 0.0, 0.0, 14.3]
+    for c in cohorts:
+        sub_fs = fs_df[fs_df["diagnosis"] == c.upper()]
+        rate = (sub_fs["qc_pass"] == True).mean() * 100.0 if len(sub_fs) > 0 else 0.0
+        fs_rates.append(rate)
     
     x = np.arange(len(cohorts))
     width = 0.36
@@ -232,35 +240,54 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
                      xytext=(0, 4), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold", color="#a00")
         
     # -------------------------------------------------------------
-    # -------------------------------------------------------------
     # Panel B: Modeled Probability of Measurement Failure vs Slice Thickness
     # -------------------------------------------------------------
     ax2 = axes[0, 1]
     th_range = np.linspace(1.0, 8.0, 150)
+    delta_th = th_range[None, :] - 1.0  # shape: (1, 150)
+    
+    alpha_samples = traces["alpha"][:, None]          # shape: (S, 1)
+    b_thick_samples = traces["beta_thick"][:, None]   # shape: (S, 1)
+    b_cont_samples = traces["beta_contrast"][:, None] # shape: (S, 1)
+    b_low_samples = traces["beta_lowfield"][:, None]  # shape: (S, 1)
     
     # 1. Unenhanced, 1.5T
-    logit_p1 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0)
-    p1 = 1.0 / (1.0 + np.exp(-logit_p1))
+    logit_p1_samples = alpha_samples + b_thick_samples * delta_th
+    p1_samples = 1.0 / (1.0 + np.exp(-logit_p1_samples))
+    p1_median = np.median(p1_samples, axis=0)
+    p1_lo = np.percentile(p1_samples, 2.5, axis=0)
+    p1_hi = np.percentile(p1_samples, 97.5, axis=0)
     
     # 2. Contrast-enhanced (+C), 1.5T
-    logit_p2 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0) + model_params["beta_contrast"]
-    p2 = 1.0 / (1.0 + np.exp(-logit_p2))
+    logit_p2_samples = alpha_samples + b_thick_samples * delta_th + b_cont_samples
+    p2_samples = 1.0 / (1.0 + np.exp(-logit_p2_samples))
+    p2_median = np.median(p2_samples, axis=0)
+    p2_lo = np.percentile(p2_samples, 2.5, axis=0)
+    p2_hi = np.percentile(p2_samples, 97.5, axis=0)
     
     # 3. Low-field (0.35T), Unenhanced
-    logit_p3 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0) + model_params["beta_lowfield"]
-    p3 = 1.0 / (1.0 + np.exp(-logit_p3))
+    logit_p3_samples = alpha_samples + b_thick_samples * delta_th + b_low_samples
+    p3_samples = 1.0 / (1.0 + np.exp(-logit_p3_samples))
+    p3_median = np.median(p3_samples, axis=0)
+    p3_lo = np.percentile(p3_samples, 2.5, axis=0)
+    p3_hi = np.percentile(p3_samples, 97.5, axis=0)
     
-    ax2.plot(th_range, p1, label="1.5T Unenhanced", color="#2ca02c", linewidth=2.5)
-    ax2.plot(th_range, p2, label="1.5T Contrast-Enhanced (+C)", color="#ff7f0e", linewidth=2.5, linestyle="--")
-    ax2.plot(th_range, p3, label="0.35T Low-Field", color="#9467bd", linewidth=2.5, linestyle="-.")
+    ax2.plot(th_range, p1_median, label="1.5T Unenhanced (Median)", color="#2ca02c", linewidth=2.5)
+    ax2.fill_between(th_range, p1_lo, p1_hi, color="#2ca02c", alpha=0.18, label="1.5T Unenhanced 95% HDI")
+    
+    ax2.plot(th_range, p2_median, label="1.5T Contrast (+C) (Median)", color="#ff7f0e", linewidth=2.5, linestyle="--")
+    ax2.fill_between(th_range, p2_lo, p2_hi, color="#ff7f0e", alpha=0.18, label="1.5T Contrast 95% HDI")
+    
+    ax2.plot(th_range, p3_median, label="0.35T Low-Field (Median)", color="#9467bd", linewidth=2.5, linestyle="-.")
+    ax2.fill_between(th_range, p3_lo, p3_hi, color="#9467bd", alpha=0.18, label="0.35T Low-Field 95% HDI")
     
     ax2.set_xlabel("Acquired Slice Thickness (mm)", fontweight="bold")
     ax2.set_ylabel("P(Measurement Failure / Unviable)", fontweight="bold")
-    ax2.set_title("B. Modeled Measurement Failure Probability (Bayesian Logistic)", fontweight="bold", pad=12)
+    ax2.set_title("B. Modeled Failure Probability with 95% Posterior HDI Bands", fontweight="bold", pad=12)
     ax2.set_xlim(1.0, 8.0)
-    ax2.set_ylim(-0.05, 1.05)
+    ax2.set_ylim(-0.02, 1.02)
     ax2.axvline(5.0, color="red", linestyle=":", alpha=0.7, label="Standard Clinical 2D (5mm)")
-    ax2.legend(loc="upper left", frameon=True, framealpha=0.9, fontsize=9)
+    ax2.legend(loc="upper left", frameon=True, framealpha=0.9, fontsize=8.5)
     
     # -------------------------------------------------------------
     # Panel C: Log-Odds of Measurement Failure Risk Factors
@@ -294,20 +321,48 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
     ax4 = axes[1, 1]
     ax4.axis("off")
     
+    # Posterior predictions for representative clinical acquisition profiles:
+    # 1. 3D High-Res (1.0 mm, unenhanced, 1.5T)
+    prof1_p = 1.0 / (1.0 + np.exp(-(traces["alpha"])))
+    prof1_med = np.median(prof1_p) * 100.0
+    prof1_lo = np.percentile(prof1_p, 2.5) * 100.0
+    prof1_hi = np.percentile(prof1_p, 97.5) * 100.0
+
+    # 2. 2D Standard (4.0 mm, unenhanced, 1.5T)
+    prof2_p = 1.0 / (1.0 + np.exp(-(traces["alpha"] + traces["beta_thick"] * 3.0)))
+    prof2_med = np.median(prof2_p) * 100.0
+    prof2_lo = np.percentile(prof2_p, 2.5) * 100.0
+    prof2_hi = np.percentile(prof2_p, 97.5) * 100.0
+
+    # 3. 2D Thick-Slice (5.0 mm, +C, 1.5T)
+    prof3_p = 1.0 / (1.0 + np.exp(-(traces["alpha"] + traces["beta_thick"] * 4.0 + traces["beta_contrast"])))
+    prof3_med = np.median(prof3_p) * 100.0
+    prof3_lo = np.percentile(prof3_p, 2.5) * 100.0
+    prof3_hi = np.percentile(prof3_p, 97.5) * 100.0
+
+    # 4. Low-Field (5.0 mm, unenhanced, 0.35T)
+    prof4_p = 1.0 / (1.0 + np.exp(-(traces["alpha"] + traces["beta_thick"] * 4.0 + traces["beta_lowfield"])))
+    prof4_med = np.median(prof4_p) * 100.0
+    prof4_lo = np.percentile(prof4_p, 2.5) * 100.0
+    prof4_hi = np.percentile(prof4_p, 97.5) * 100.0
+
+    # FreeSurfer empirical benchmark
+    fs_fail_rate = (1.0 - (fs_df["qc_pass"] == True).mean()) * 100.0
+    
     matrix_data = [
-        ["Acquisition Profile", "Feasible Biomarkers", "Failure Risk", "Statistical Handling"],
-        ["3D High-Res (1.0 mm, unenhanced)", "Evans' Index, PEF, VBR, Subcortical", "Minimal (< 2%)", "Direct pooling"],
-        ["2D Standard (3.0 - 5.0 mm, unenhanced)", "Evans' Index (Flagship), PEF", "Low (2 - 8%)", "Heteroskedastic weight (λ)"],
-        ["2D Thick-Slice (5.0 - 6.0 mm, +C)", "Evans' Index only", "Moderate (15 - 30%)", "Contrast covariate (δ) + λ"],
-        ["Low-Field (<=0.35T, 5.0 - 10.0 mm)", "Evans' Index with manual QC", "Elevated (> 40%)", "Site random effect + bounds"],
-        ["FreeSurfer on any 2D Thick-Slice", "None (Catastrophic Attrition)", "Extreme (> 85%)", "DO NOT DEPLOY"]
+        ["Acquisition Profile", "Feasible Biomarkers", "Posterior Failure Risk\n[Median, 95% HDI]", "Recommended\nStatistical Handling"],
+        ["3D High-Res\n(1.0 mm, 1.5T)", "Evans' Index, PEF,\nVBR, Subcortical", f"{prof1_med:.2f}%\n[{prof1_lo:.2f}%, {prof1_hi:.2f}%]", "Direct pooling"],
+        ["2D Standard\n(4.0 mm, 1.5T)", "Evans' Index (Flagship),\nPEF", f"{prof2_med:.2f}%\n[{prof2_lo:.2f}%, {prof2_hi:.2f}%]", "Heteroskedastic noise\nscaling (λ)"],
+        ["2D Thick-Slice\n(5.0 mm, +C, 1.5T)", "Evans' Index only", f"{prof3_med:.2f}%\n[{prof3_lo:.2f}%, {prof3_hi:.2f}%]", "Contrast covariate (δ)\n+ noise scaling (λ)"],
+        ["Low-Field\n(5.0 mm, 0.35T)", "Evans' Index\n(with manual QC)", f"{prof4_med:.2f}%\n[{prof4_lo:.2f}%, {prof4_hi:.2f}%]", "Institutional random\neffect + QC bounds"],
+        ["FreeSurfer Pilot\n(2D Thick-Slice)", "None\n(Catastrophic attrition)", f"{fs_fail_rate:.1f}%\n(Empirical failure)", "DO NOT DEPLOY\n(Biologically unviable)"]
     ]
     
-    tbl = ax4.table(cellText=matrix_data, loc="center", cellLoc="left",
-                    colWidths=[0.28, 0.28, 0.18, 0.26])
+    tbl = ax4.table(cellText=matrix_data, loc="center", cellLoc="center",
+                    colWidths=[0.24, 0.26, 0.25, 0.25])
     tbl.auto_set_font_size(False)
-    tbl.set_fontsize(8.5)
-    tbl.scale(1.0, 1.9)
+    tbl.set_fontsize(8.2)
+    tbl.scale(1.0, 2.2)
     
     for (row, col), cell in tbl.get_celld().items():
         cell.set_edgecolor("#cccccc")
@@ -369,7 +424,7 @@ def main():
     logit_summary.to_csv(out_csv, index=False)
     print(f"\n✓ Saved failure model table: {out_csv}")
 
-    generate_feasibility_plot(df, logit_summary, model_params, plot_path)
+    generate_feasibility_plot(df, logit_summary, model_params, traces, plot_path)
     print(f"✓ Saved publication figure: {plot_path}")
     print(f"Experiment 2 completed in {time.time() - t_start:.2f}s")
     print("=" * 75)

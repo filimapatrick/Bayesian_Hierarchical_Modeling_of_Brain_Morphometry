@@ -1,22 +1,22 @@
 Parameter,Mean,SD,HDI_2.5%,HDI_97.5%,R_hat,ESS_bulk,ESS_tail
-alpha (Global Baseline),0.793,0.007,0.781,0.806,1.0,4589.0,4075.0
-delta (Contrast Effect),0.031,0.009,0.013,0.05,1.0,4874.0,4056.0
-sigma_0 (Baseline Noise at 1mm),0.037,0.005,0.028,0.047,1.0,3512.0,3461.0
-lambda (Slice Noise Scale),0.106,0.037,0.034,0.179,1.0,3617.0,3269.0
-tau_beta (Disorder SD),0.013,0.011,0.0,0.034,1.0,2028.0,2647.0
-tau_gamma (Site SD),0.054,0.017,0.027,0.088,1.0,2528.0,3367.0
-beta_CONTROL (Ref=0),0.0,0.0,0.0,0.0,1.0,6000.0,6000.0
-beta_DEMENTIA,-0.004,0.008,-0.022,0.012,1.0,5140.0,4976.0
-beta_EPILEPSY,0.0,0.01,-0.021,0.022,1.0,6124.0,5124.0
-beta_HYDROCEPHALUS,0.002,0.008,-0.012,0.021,1.0,4623.0,4865.0
-beta_PARKINSON,0.01,0.011,-0.007,0.035,1.0,3317.0,5022.0
-gamma_AKTH_NKDC,-0.023,0.011,-0.045,-0.001,1.0,7107.0,5132.0
-gamma_BMH,0.014,0.012,-0.009,0.04,1.0,8196.0,5251.0
-gamma_IDC,-0.073,0.009,-0.091,-0.054,1.0,5914.0,5228.0
-gamma_LifeBridge,0.032,0.016,-0.002,0.062,1.0,6703.0,4754.0
-gamma_RSUTH,0.063,0.008,0.048,0.078,1.0,6475.0,5160.0
-gamma_UPTH,-0.015,0.009,-0.032,0.002,1.0,6937.0,5415.0
-ICC_disorder (Disorder Share - 1mm Ref),0.058,0.085,0.0,0.231,1.0,2096.0,2607.0
-ICC_site (Site Variance Fraction - 1mm Ref),0.615,0.147,0.343,0.884,1.0,2778.0,3765.0
-ICC_disorder_clinical (Cohort Average Disorder Share),0.044,0.067,0.0,0.18,1.0,2082.0,2663.0
-ICC_site_clinical (Cohort Average Site Variance Fraction),0.47,0.142,0.215,0.745,1.0,2629.0,3513.0
+alpha (Global Baseline),0.793,0.006,0.781,0.806,1.0,6161.0,5559.0
+delta (Contrast Effect),0.031,0.009,0.013,0.05,1.0,6490.0,5261.0
+sigma_0 (Baseline Noise at 1mm),0.037,0.005,0.028,0.047,1.0,4753.0,4630.0
+lambda (Slice Noise Scale),0.106,0.036,0.034,0.177,1.0,4846.0,4472.0
+tau_beta (Disorder SD),0.013,0.011,0.0,0.034,1.0,2761.0,3348.0
+tau_gamma (Site SD),0.053,0.016,0.027,0.087,1.0,3307.0,4398.0
+beta_CONTROL (Ref=0),0.0,0.0,0.0,0.0,1.0,8000.0,8000.0
+beta_DEMENTIA,-0.004,0.008,-0.022,0.011,1.0,6982.0,6893.0
+beta_EPILEPSY,0.0,0.01,-0.02,0.023,1.0,8036.0,6924.0
+beta_HYDROCEPHALUS,0.002,0.008,-0.012,0.02,1.0,6207.0,6546.0
+beta_PARKINSON,0.01,0.011,-0.007,0.035,1.0,4377.0,6411.0
+gamma_AKTH_NKDC,-0.023,0.011,-0.045,-0.001,1.0,9411.0,6287.0
+gamma_BMH,0.014,0.012,-0.009,0.039,1.0,10184.0,6733.0
+gamma_IDC,-0.073,0.009,-0.091,-0.054,1.0,8389.0,6877.0
+gamma_LifeBridge,0.032,0.016,0.0,0.064,1.0,8556.0,6409.0
+gamma_RSUTH,0.063,0.008,0.048,0.078,1.0,8671.0,7034.0
+gamma_UPTH,-0.015,0.009,-0.032,0.002,1.0,9473.0,7072.0
+ICC_disorder (Disorder Share - 1mm Ref),0.058,0.086,0.0,0.234,1.0,2844.0,3274.0
+ICC_site (Site Variance Fraction - 1mm Ref),0.614,0.146,0.34,0.882,1.0,3708.0,5305.0
+ICC_disorder_clinical (Cohort Average Disorder Share),0.044,0.068,0.0,0.181,1.0,2833.0,3320.0
+ICC_site_clinical (Cohort Average Site Variance Fraction),0.469,0.141,0.215,0.742,1.0,3453.0,4823.0
