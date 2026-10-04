@@ -89,6 +89,10 @@ echo "🔍 Verifying Python Dependencies..."
 ${PYTHON_EXEC} -c '
 import numpy
 import scipy
+import scipy.signal
+import scipy.signal.windows
+if not hasattr(scipy.signal, "gaussian"):
+    scipy.signal.gaussian = scipy.signal.windows.gaussian
 import pandas
 import nibabel
 import matplotlib
@@ -193,7 +197,7 @@ ${PYTHON_EXEC} features/clinical_failure_boundaries.py \
 # ==============================================================================
 echo ""
 echo "=============================================================================="
-echo "▶ STEP 5/5: Experiment 3 - Model Benchmarks & Sensitivity Analysis"
+echo "▶ STEP 5/6: Experiment 3 - Model Benchmarks & Sensitivity Analysis"
 echo "=============================================================================="
 ${PYTHON_EXEC} modeling/sensitivity_analysis.py \
     --features_csv "${SCRIPT_DIR}/results/tables/macro_features.csv" \
@@ -201,6 +205,19 @@ ${PYTHON_EXEC} modeling/sensitivity_analysis.py \
     --sensitivity_csv "${SCRIPT_DIR}/results/tables/experiment3_sensitivity_analysis.csv" \
     --fig3_path "${SCRIPT_DIR}/results/figures/figure3_posterior_shrinkage_forest.png" \
     --fig4_path "${SCRIPT_DIR}/results/figures/figure4_variance_partitioning_sensitivity.png"
+
+# ==============================================================================
+# STEP 6: EXPERIMENT 3 - POSTERIOR PREDICTIVE CHECKS & BOUNDARY EVALUATION
+# ==============================================================================
+echo ""
+echo "=============================================================================="
+echo "▶ STEP 6/6: Experiment 3 - Posterior Predictive Checks (PPC) & Model Assessment"
+echo "=============================================================================="
+${PYTHON_EXEC} modeling/posterior_predictive_check.py \
+    --features_csv "${SCRIPT_DIR}/results/tables/macro_features.csv" \
+    --traces_dir "${SCRIPT_DIR}/results/traces" \
+    --output_csv "${SCRIPT_DIR}/results/tables/posterior_predictive_summary.csv" \
+    --output_plot "${SCRIPT_DIR}/results/figures/figure5_posterior_predictive_checks.png"
 
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
@@ -231,6 +248,7 @@ artifacts = [
     ("results/tables/experiment2_failure_boundaries.csv", "Table: Exp 2 Logistic Failure Model"),
     ("results/tables/experiment3_model_benchmarks.csv", "Table: Exp 3 Model Benchmarks"),
     ("results/tables/experiment3_sensitivity_analysis.csv", "Table: Exp 3 Confounding Sensitivity Tests"),
+    ("results/tables/posterior_predictive_summary.csv", "Table: Exp 3 PPC Coverage Summary"),
     # Traces
     ("results/traces/mcmc_traces_pef.npz", "Traces: PEF MCMC Markov Chains"),
     ("results/traces/mcmc_traces_bpf.npz", "Traces: BPF (Legacy Mirror) MCMC Markov Chains"),
@@ -241,6 +259,7 @@ artifacts = [
     ("results/figures/figure2_clinical_feasibility_boundaries.png", "Figure 2: Exp 2 Clinical Feasibility Boundaries"),
     ("results/figures/figure3_posterior_shrinkage_forest.png", "Figure 3: Exp 3 Posterior Shrinkage Forest Plot"),
     ("results/figures/figure4_variance_partitioning_sensitivity.png", "Figure 4: Exp 3 Variance Partitioning & Sensitivity"),
+    ("results/figures/figure5_posterior_predictive_checks.png", "Figure 5: Exp 3 Posterior Predictive Distributions"),
 ]
 
 all_ok = True
@@ -257,7 +276,7 @@ for rel_path, desc in artifacts:
 
 print("-" * 78)
 if all_ok:
-    print("✨ ALL 19 STUDY ARTIFACTS VERIFIED SUCCESSFULLY!")
+    print("✨ ALL 21 STUDY ARTIFACTS VERIFIED SUCCESSFULLY!")
 else:
     print("⚠️ Some artifacts are missing or zero-sized. Review step logs above.")
 '

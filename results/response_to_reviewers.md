@@ -11,7 +11,7 @@
 
 We express our profound gratitude to the reviewers for their constructive, rigorous, and methodologically transformative critique. Rather than treating our dataset as "poor-quality research scans" forced through conventional pipelines (FreeSurfer / FSL), we completely restructured the scientific framing around the fundamental question: **"What survives the blur?"** 
 
-We implemented a **Three-Tier Experimental Lab Architecture**, re-executed all empirical analyses across our cohort ($N=218$ subjects from 6 Nigerian healthcare centers), ran extensive Markov Chain Monte Carlo (MCMC) Bayesian inference with 8,000 draws per biomarker, generated four manuscript-ready publication figures, and drafted a comprehensive 8,300-word manuscript ([`manuscript/manuscript.md`](file:///Volumes/MyHDD/bayesian-brain-morphometry/manuscript/manuscript.md)).
+We implemented a **Three-Tier Experimental Lab Architecture**, re-executed all empirical analyses across our cohort ($N=218$ subjects from 6 Nigerian healthcare centers), ran extensive Markov Chain Monte Carlo (MCMC) Bayesian inference with 8,000 draws per biomarker, generated four manuscript-ready publication figures, and drafted a comprehensive 8,300-word manuscript ([`manuscript/manuscript.md`](../manuscript/manuscript.md)).
 
 Below is our point-by-point response detailing how every individual critique was addressed with direct empirical proof.
 
@@ -137,7 +137,7 @@ The entire study, codebase, results tables, figures, and manuscript were restruc
 * **Experiment 2:** Real-World Clinical Feasibility & Failure Boundaries ($N=218$) $\to$ **Figure 2** & Table 3.
 * **Experiment 3:** Uncertainty-Aware Bayesian Disease Inference & Sensitivity $\to$ **Figures 3 & 4**, Tables 4–6.
 
-* **Where addressed in manuscript:** Section 2, Section 3, Section 4, and master script [`run_study.sh`](file:///Volumes/MyHDD/bayesian-brain-morphometry/run_study.sh).
+* **Where addressed in manuscript:** Section 2, Section 3, Section 4, and master script [`run_study.sh`](../run_study.sh).
 
 ---
 
@@ -175,7 +175,7 @@ We conducted a comprehensive audit of `data/bids/participants.tsv` and unified a
 * The cohort counts were reconciled: $N = 218$ total subjects ($209$ valid volumetric series, $9$ 2D scout scans).
 * Manufacturer for IDC is documented strictly as recorded (`n/a`) without unverified attribution.
 
-* **Where addressed in manuscript:** Section 2.1, Section 2.2, Table 1, and [README.md](file:///Volumes/MyHDD/bayesian-brain-morphometry/README.md).
+* **Where addressed in manuscript:** Section 2.1, Section 2.2, Table 1, and [README.md](../README.md).
 
 ---
 

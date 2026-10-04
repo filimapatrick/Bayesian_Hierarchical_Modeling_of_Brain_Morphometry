@@ -27,76 +27,150 @@ from scipy import stats
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-def fit_logistic_failure_model(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, float]]:
+# Ensure scipy.signal.gaussian compatibility for ArviZ under SciPy 1.13+
+import scipy.signal
+import scipy.signal.windows
+if not hasattr(scipy.signal, "gaussian"):
+    scipy.signal.gaussian = scipy.signal.windows.gaussian
+
+import arviz as az
+import pymc as pm
+
+def fit_logistic_failure_model(
+    df: pd.DataFrame,
+    draws: int = 1500,
+    tune: int = 1000,
+    chains: int = 4,
+    random_seed: int = 42,
+) -> Tuple[pd.DataFrame, Dict[str, float], Dict[str, np.ndarray]]:
     """
-    Fits a multivariate logistic regression model predicting pipeline unviability / measurement failure
-    as a function of slice thickness, gadolinium contrast, and low field strength.
+    Fits a Bayesian multivariate logistic regression model predicting pipeline unviability / measurement failure
+    as a function of slice thickness, gadolinium contrast, and low field strength using PyMC NUTS.
+
+    Likelihood:
+      y_i ~ Bernoulli(p_i)
+      logit(p_i) = alpha + beta_thick * (h_i - 1.0) + beta_contrast * Contrast_i + beta_lowfield * LowField_i
+
+    Prespecified Quality Control Failure Criteria:
+      1. Scout / localizer series (< 10 slices, truncated FOV)
+      2. Evans' Index: < 0.18 or > 0.85 (Anatomically implausible automated geometry)
+      3. PEF: < 0.45 or > 0.96 (Envelope extraction boundary violations)
+      4. VBR: <= 0.0 or > 0.60 (Non-physical / extreme segmentation leak)
+      5. Hemispheric Asymmetry Index (HAI): > 35.0% (Gross unilateral coil cutoff or tilt)
     """
-    # Comprehensive measurement failure criteria:
-    # 1. Scout / localizer series (< 10 slices, truncated FOV)
+    # 1. Scout / localizer series
     scout_fail = (df["is_volumetric_valid"] == 0.0)
     
     # 2. Biological boundary violations & extraction failures
+    pef_col = "pef" if "pef" in df.columns else "bpf"
     ei_fail = df["evans_index"].isna() | (df["evans_index"] < 0.18) | (df["evans_index"] > 0.85)
-    pef_fail = df["bpf"].isna() | (df["bpf"] < 0.45) | (df["bpf"] > 0.96)
+    pef_fail = df[pef_col].isna() | (df[pef_col] < 0.45) | (df[pef_col] > 0.96)
     vbr_fail = df["vbr"].isna() | (df["vbr"] <= 0.0) | (df["vbr"] > 0.60)
     asym_fail = df["asymmetry_index"].isna() | (df["asymmetry_index"] > 35.0)
     
     # Combined measurement unviability indicator
     is_failed = scout_fail | ei_fail | pef_fail | vbr_fail | asym_fail
-    y = is_failed.astype(float).values
+    y = is_failed.astype(int).values
     
-    # Covariates:
-    # 1. Slice thickness (mm)
-    # 2. Contrast enhanced (1 or 0)
-    # 3. Low field indicator (field <= 0.35T)
+    # Covariates (centered thickness at 1.0 mm reference)
     x_thick = df["slice_thickness_mm"].fillna(df["slice_thickness_mm"].median()).values
     x_contrast = df["contrast_enhanced"].astype(float).values
     x_lowfield = (df["magnetic_field_strength"] <= 0.35).astype(float).values
     
-    X = np.column_stack([np.ones_like(x_thick), x_thick, x_contrast, x_lowfield])
+    with pm.Model() as model:
+        alpha = pm.Normal("alpha", mu=-2.0, sigma=2.0)
+        beta_thick = pm.Normal("beta_thick", mu=0.0, sigma=1.0)
+        beta_contrast = pm.Normal("beta_contrast", mu=0.0, sigma=1.0)
+        beta_lowfield = pm.Normal("beta_lowfield", mu=0.0, sigma=1.0)
+        
+        logit_p = alpha + beta_thick * (x_thick - 1.0) + beta_contrast * x_contrast + beta_lowfield * x_lowfield
+        pm.Bernoulli("obs", logit_p=logit_p, observed=y)
+        
+        idata = pm.sample(
+            draws=draws,
+            tune=tune,
+            chains=chains,
+            target_accept=0.95,
+            random_seed=random_seed,
+            progressbar=False,
+        )
+        
+    summary = az.summary(idata, hdi_prob=0.95)
     
-    # Regularized IRLS / Newton-Raphson for stable logistic regression
-    beta = np.zeros(X.shape[1])
-    for _ in range(30):
-        p = 1.0 / (1.0 + np.exp(-np.clip(X @ beta, -15, 15)))
-        W = p * (1.0 - p)
-        W = np.clip(W, 1e-6, 1.0)
-        grad = X.T @ (y - p)
-        H = -X.T @ (X * W[:, None])
-        H_reg = H - 0.1 * np.eye(X.shape[1])
-        delta = np.linalg.solve(H_reg, -grad)
-        beta += delta
-        if np.max(np.abs(delta)) < 1e-4:
-            break
-            
-    cov_beta = np.linalg.inv(-H_reg)
-    se_beta = np.sqrt(np.diag(cov_beta))
+    post_alpha = idata.posterior["alpha"].values.flatten()
+    post_thick = idata.posterior["beta_thick"].values.flatten()
+    post_contrast = idata.posterior["beta_contrast"].values.flatten()
+    post_lowfield = idata.posterior["beta_lowfield"].values.flatten()
     
-    var_names = ["Intercept", "Slice Thickness (mm)", "Contrast (+C)", "Low Field (<=0.35T)"]
-    odds_ratios = np.exp(beta)
-    ci_lower = np.exp(beta - 1.96 * se_beta)
-    ci_upper = np.exp(beta + 1.96 * se_beta)
-    p_values = 2.0 * (1.0 - stats.norm.cdf(np.abs(beta / se_beta)))
+    or_thick = np.exp(post_thick)
+    or_contrast = np.exp(post_contrast)
+    or_lowfield = np.exp(post_lowfield)
     
-    summary_df = pd.DataFrame({
-        "Predictor": var_names,
-        "Coefficient": beta,
-        "Std_Error": se_beta,
-        "Odds_Ratio": odds_ratios,
-        "OR_95_CI_Lower": ci_lower,
-        "OR_95_CI_Upper": ci_upper,
-        "p_value": p_values
-    })
+    records = [
+        {
+            "Predictor": "Intercept (1.0mm, Unenhanced, 1.5T)",
+            "Mean_LogOdds": float(summary.loc["alpha", "mean"]),
+            "SD": float(summary.loc["alpha", "sd"]),
+            "HDI_2.5%": float(summary.loc["alpha", "hdi_2.5%"]),
+            "HDI_97.5%": float(summary.loc["alpha", "hdi_97.5%"]),
+            "Odds_Ratio_Median": float(np.median(np.exp(post_alpha))),
+            "OR_HDI_2.5%": float(np.percentile(np.exp(post_alpha), 2.5)),
+            "OR_HDI_97.5%": float(np.percentile(np.exp(post_alpha), 97.5)),
+            "R_hat": float(summary.loc["alpha", "r_hat"]),
+            "ESS_bulk": float(summary.loc["alpha", "ess_bulk"]),
+        },
+        {
+            "Predictor": "Slice Thickness (per mm above 1mm)",
+            "Mean_LogOdds": float(summary.loc["beta_thick", "mean"]),
+            "SD": float(summary.loc["beta_thick", "sd"]),
+            "HDI_2.5%": float(summary.loc["beta_thick", "hdi_2.5%"]),
+            "HDI_97.5%": float(summary.loc["beta_thick", "hdi_97.5%"]),
+            "Odds_Ratio_Median": float(np.median(or_thick)),
+            "OR_HDI_2.5%": float(np.percentile(or_thick, 2.5)),
+            "OR_HDI_97.5%": float(np.percentile(or_thick, 97.5)),
+            "R_hat": float(summary.loc["beta_thick", "r_hat"]),
+            "ESS_bulk": float(summary.loc["beta_thick", "ess_bulk"]),
+        },
+        {
+            "Predictor": "Contrast (+C)",
+            "Mean_LogOdds": float(summary.loc["beta_contrast", "mean"]),
+            "SD": float(summary.loc["beta_contrast", "sd"]),
+            "HDI_2.5%": float(summary.loc["beta_contrast", "hdi_2.5%"]),
+            "HDI_97.5%": float(summary.loc["beta_contrast", "hdi_97.5%"]),
+            "Odds_Ratio_Median": float(np.median(or_contrast)),
+            "OR_HDI_2.5%": float(np.percentile(or_contrast, 2.5)),
+            "OR_HDI_97.5%": float(np.percentile(or_contrast, 97.5)),
+            "R_hat": float(summary.loc["beta_contrast", "r_hat"]),
+            "ESS_bulk": float(summary.loc["beta_contrast", "ess_bulk"]),
+        },
+        {
+            "Predictor": "Low Field (<=0.35T)",
+            "Mean_LogOdds": float(summary.loc["beta_lowfield", "mean"]),
+            "SD": float(summary.loc["beta_lowfield", "sd"]),
+            "HDI_2.5%": float(summary.loc["beta_lowfield", "hdi_2.5%"]),
+            "HDI_97.5%": float(summary.loc["beta_lowfield", "hdi_97.5%"]),
+            "Odds_Ratio_Median": float(np.median(or_lowfield)),
+            "OR_HDI_2.5%": float(np.percentile(or_lowfield, 2.5)),
+            "OR_HDI_97.5%": float(np.percentile(or_lowfield, 97.5)),
+            "R_hat": float(summary.loc["beta_lowfield", "r_hat"]),
+            "ESS_bulk": float(summary.loc["beta_lowfield", "ess_bulk"]),
+        },
+    ]
+    summary_df = pd.DataFrame(records)
     
     model_params = {
-        "beta_0": beta[0],
-        "beta_thick": beta[1],
-        "beta_contrast": beta[2],
-        "beta_lowfield": beta[3]
+        "alpha": float(summary.loc["alpha", "mean"]),
+        "beta_thick": float(summary.loc["beta_thick", "mean"]),
+        "beta_contrast": float(summary.loc["beta_contrast", "mean"]),
+        "beta_lowfield": float(summary.loc["beta_lowfield", "mean"]),
     }
-    
-    return summary_df, model_params
+    traces = {
+        "alpha": post_alpha,
+        "beta_thick": post_thick,
+        "beta_contrast": post_contrast,
+        "beta_lowfield": post_lowfield,
+    }
+    return summary_df, model_params, traces
 
 
 def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, model_params: Dict[str, float], plot_path: Path):
@@ -158,21 +232,22 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
                      xytext=(0, 4), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold", color="#a00")
         
     # -------------------------------------------------------------
+    # -------------------------------------------------------------
     # Panel B: Modeled Probability of Measurement Failure vs Slice Thickness
     # -------------------------------------------------------------
     ax2 = axes[0, 1]
     th_range = np.linspace(1.0, 8.0, 150)
     
     # 1. Unenhanced, 1.5T
-    logit_p1 = model_params["beta_0"] + model_params["beta_thick"] * th_range
+    logit_p1 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0)
     p1 = 1.0 / (1.0 + np.exp(-logit_p1))
     
     # 2. Contrast-enhanced (+C), 1.5T
-    logit_p2 = model_params["beta_0"] + model_params["beta_thick"] * th_range + model_params["beta_contrast"]
+    logit_p2 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0) + model_params["beta_contrast"]
     p2 = 1.0 / (1.0 + np.exp(-logit_p2))
     
     # 3. Low-field (0.35T), Unenhanced
-    logit_p3 = model_params["beta_0"] + model_params["beta_thick"] * th_range + model_params["beta_lowfield"]
+    logit_p3 = model_params["alpha"] + model_params["beta_thick"] * (th_range - 1.0) + model_params["beta_lowfield"]
     p3 = 1.0 / (1.0 + np.exp(-logit_p3))
     
     ax2.plot(th_range, p1, label="1.5T Unenhanced", color="#2ca02c", linewidth=2.5)
@@ -181,7 +256,7 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
     
     ax2.set_xlabel("Acquired Slice Thickness (mm)", fontweight="bold")
     ax2.set_ylabel("P(Measurement Failure / Unviable)", fontweight="bold")
-    ax2.set_title("B. Modeled Measurement Failure Probability (Logistic Model)", fontweight="bold", pad=12)
+    ax2.set_title("B. Modeled Measurement Failure Probability (Bayesian Logistic)", fontweight="bold", pad=12)
     ax2.set_xlim(1.0, 8.0)
     ax2.set_ylim(-0.05, 1.05)
     ax2.axvline(5.0, color="red", linestyle=":", alpha=0.7, label="Standard Clinical 2D (5mm)")
@@ -194,24 +269,24 @@ def generate_feasibility_plot(df: pd.DataFrame, logit_summary: pd.DataFrame, mod
     preds = logit_summary.iloc[1:].copy()
     y_pos = np.arange(len(preds))
     
-    betas = preds["Coefficient"].values
-    ses = preds["Std_Error"].values
-    ors = preds["Odds_Ratio"].values
+    means = preds["Mean_LogOdds"].values
+    hdi_lo = preds["HDI_2.5%"].values
+    hdi_hi = preds["HDI_97.5%"].values
+    xerr = [means - hdi_lo, hdi_hi - means]
     
-    ax3.errorbar(betas, y_pos, xerr=1.96 * ses, fmt='o', color="#1f77b4",
+    ax3.errorbar(means, y_pos, xerr=xerr, fmt='o', color="#1f77b4",
                  ecolor="#333333", elinewidth=2, capsize=5, markersize=8)
     
     ax3.axvline(0.0, color="red", linestyle="--", alpha=0.7)
     ax3.set_yticks(y_pos)
     ax3.set_yticklabels(preds["Predictor"].values, fontweight="bold")
-    ax3.set_xlabel("Log-Odds Coefficient [95% CI]", fontweight="bold")
-    ax3.set_title("C. Adjusted Log-Odds for Structural Failure", fontweight="bold", pad=12)
+    ax3.set_xlabel("Posterior Log-Odds [95% HDI]", fontweight="bold")
+    ax3.set_title("C. Bayesian Adjusted Log-Odds for Structural Failure", fontweight="bold", pad=12)
     
-    for i, row in preds.iterrows():
-        idx = i - 1
-        ax3.annotate(f"OR = {row['Odds_Ratio']:.2f}\n(p={row['p_value']:.4f})",
-                     xy=(row['Coefficient'], idx), xytext=(12, -5),
-                     textcoords="offset points", fontsize=8.5, fontweight="bold")
+    for idx, (_, row) in enumerate(preds.iterrows()):
+        ax3.annotate(f"OR = {row['Odds_Ratio_Median']:.2f}\n[95% HDI: {row['OR_HDI_2.5%']:.2f}, {row['OR_HDI_97.5%']:.2f}]",
+                     xy=(row['Mean_LogOdds'], idx), xytext=(12, -8),
+                     textcoords="offset points", fontsize=8.0, fontweight="bold")
 
     # -------------------------------------------------------------
     # Panel D: Feasibility Decision Matrix Table
@@ -286,8 +361,8 @@ def main():
     print(f"  • Valid Analyzable Scans: {valid_scans} ({retention_rate:.1f}%)")
     print(f"  • Flagged Scouts / Invalids: {failed_scans} ({100.0 - retention_rate:.1f}%)")
 
-    logit_summary, model_params = fit_logistic_failure_model(df)
-    print("\n📈 Logistic Regression Failure Model [Logit(P(Failure))]:")
+    logit_summary, model_params, traces = fit_logistic_failure_model(df)
+    print("\n📈 Bayesian Logistic Regression Failure Model [Logit(P(Failure))]:")
     print(logit_summary.to_string(index=False))
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
