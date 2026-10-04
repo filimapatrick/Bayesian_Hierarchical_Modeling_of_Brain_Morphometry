@@ -94,9 +94,9 @@ We elevated **Evans' Index** to be the primary flagship positive-control biomark
 
 **Author Response:**  
 We restructured our clinical evaluation around this exact four-tiered detectability gradient:
-1. **Tier 1 (Flagship Positive Control):** Hydrocephalus ($N=82$) — massive ventricular enlargement easily exceeding acquisition noise.
+1. **Tier 1 (A Priori High-Detectability Phenotype):** Hydrocephalus ($N=82$) — massive ventricular enlargement easily exceeding acquisition noise.
 2. **Tier 2 (Neurodegenerative Target):** Dementia ($N=45$) — moderate global parenchymal volume loss.
-3. **Tier 3 (Negative Macro-Structural Control):** Parkinson's Disease ($N=21$) — calibrated as a negative control where T1 macro-morphometry is expected to show minimal macro-volumetric deviation.
+3. **Tier 3 (A Priori Low-Detectability Macro Phenotype):** Parkinson's Disease ($N=21$) — where T1 macro-morphometry is expected to show minimal macro-volumetric deviation.
 4. **Tier 4 (Exploratory Asymmetry):** Epilepsy ($N=7$) — evaluated conservatively with full uncertainty reporting rather than forcing spurious significance.
 
 * **Where addressed in manuscript:** Section 1, Section 2.4, Section 3.3, and **Figure 3**.
@@ -195,7 +195,7 @@ All predetermined numerical values were removed from the study methodology. Tabl
 **Author Response:**  
 We completely reframed Epilepsy and Parkinson's Disease:
 * Epilepsy is treated strictly as an exploratory, high-uncertainty subset ($N=7$). Rather than claiming clinical lateralization, the manuscript emphasizes that thick-slice clinical asymmetry is vulnerable to head tilt and slice prescription.
-* Parkinson's Disease ($N=21$) is positioned as an empirical calibration control where T1 macro-morphometry is expected to show minimal macro-volumetric deviation. The null result ($\beta_{\text{PARKINSON}} = +0.0005, 95\%\text{ CrI: } [-0.0094, +0.0133]$) directly demonstrates that our Bayesian model avoids hallucinating spurious disease effects.
+* Parkinson's Disease ($N=21$) is positioned as an a priori low-detectability macro phenotype where T1 macro-morphometry is expected to show minimal macro-volumetric deviation. The null result ($\beta_{\text{PARKINSON}} = +0.0005, 95\%\text{ CrI: } [-0.0094, +0.0133]$) is consistent with prior biological expectations and demonstrates that our Bayesian model avoids hallucinating spurious disease effects.
 
 * **Where addressed in manuscript:** Section 1, Section 3.3 (Table 4), Section 4.2, and Section 4.5.
 
