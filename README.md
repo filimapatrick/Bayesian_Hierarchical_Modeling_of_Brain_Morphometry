@@ -1,4 +1,4 @@
-# 🧠 What Survives the Blur? Macro-Brain Morphometry and Uncertainty Quantification from Heterogeneous Routine Clinical MRI in Nigeria
+# What Survives the Blur? Macro-Brain Morphometry and Uncertainty Quantification from Heterogeneous Routine Clinical MRI in Nigeria
 
 [![BIDS Version](https://img.shields.io/badge/BIDS-v1.10.0%20Compliant-brightgreen.svg)](https://bids.neuroimaging.io/)
 [![PyMC](https://img.shields.io/badge/PyMC-v5.x-orange.svg)](https://www.pymc.io/)
@@ -10,7 +10,7 @@
 **Principal Investigator & Lead Author:** Patrick Filima  
 **Affiliation:** African Brain Data Network (ABDN) & Collaborating Nigerian Clinical Centers  
 **Clinical Partner Institutions:** Rivers State University Teaching Hospital (RSUTH), University of Port Harcourt Teaching Hospital (UPTH), Aminu Kano Teaching Hospital (AKTH) / Northwest Kano Diagnostic Centre (NKDC), Braithwaite Memorial Hospital (BMH), Intercontinental Diagnostic Centre (IDC), Life Bridge Diagnostic Centre  
-**Foundational Data Provenance:** *Scientific Data* (2025) [DOI: 10.1038/s41597-025-04743-0](https://doi.org/10.1038/s41597-025-04743-0) | [brainlife.io project](https://doi.org/10.25663/brainlife.p6554f423b094062da63aa4c9)
+**Foundational Data Provenance:** _Scientific Data_ (2025) [DOI: 10.1038/s41597-025-04743-0](https://doi.org/10.1038/s41597-025-04743-0) | [brainlife.io project](https://doi.org/10.25663/brainlife.p6554f423b094062da63aa4c9)
 
 ---
 
@@ -91,9 +91,10 @@ This project is grounded in retrospective, routine clinical neuroimaging workflo
 ### 1.4 The Attrition Trap of Standard Pipelines
 
 When standard Western preprocessing pipelines (FSL FAST and FIRST) were applied to these Nigerian clinical cohorts:
-* **Micro-morphometric failure:** FSL FIRST hallucinated subcortical boundaries across 5.0 mm slices, producing biologically impossible hippocampal volumes.
-* **Tissue inversion:** FSL FAST frequently inverted tissue balance on post-contrast scans, classifying hyperintense contrast-enhanced blood vessels and meninges as cortical gray matter.
-* **Catastrophic Sample Attrition:** Over 85% of available clinical scans were discarded by automated QC, and **the entire hydrocephalus cohort was lost**.
+
+- **Micro-morphometric failure:** FSL FIRST hallucinated subcortical boundaries across 5.0 mm slices, producing biologically impossible hippocampal volumes.
+- **Tissue inversion:** FSL FAST frequently inverted tissue balance on post-contrast scans, classifying hyperintense contrast-enhanced blood vessels and meninges as cortical gray matter.
+- **Catastrophic Sample Attrition:** Over 85% of available clinical scans were discarded by automated QC, and **the entire hydrocephalus cohort was lost**.
 
 ### 1.5 The Core Scientific Contribution: "What Survives the Blur?"
 
@@ -124,19 +125,20 @@ This study is not an opportunistic disease morphometry paper attempting to mimic
 > **To what extent can coarse, anatomically interpretable morphometric features be estimated from heterogeneous routine clinical MRI, and how much uncertainty in those estimates is attributable to acquisition characteristics versus clinical group?**
 
 This formulation cleanly decouples two distinct scientific challenges:
+
 1. **The Measurement Problem:** Can coarse macro-structural features (ventricular morphology, parenchymal envelope, hemispheric symmetry) be measured reliably across real-world quality gradients?
 2. **The Statistical Inference Problem:** Given severe, non-random acquisition heterogeneity and site-disease confounding, what can be legitimately inferred about clinical group differences?
 
 ### 2.2 Specific Aims
 
-* **Aim 1 — Establish the Resolution-Dependent Validity of Candidate Morphometric Biomarkers:**  
+- **Aim 1 — Establish the Resolution-Dependent Validity of Candidate Morphometric Biomarkers:**  
   Determine which macro-structural measurements remain stable under controlled degradation (synthetic downsampling and blurring from 1.0 mm to 6.0 mm) using high-resolution 3D acquisitions as an internal ground truth.
-* **Aim 2 — Characterize Measurement Uncertainty & Failure Boundaries in Routine Clinical MRI:**  
+- **Aim 2 — Characterize Measurement Uncertainty & Failure Boundaries in Routine Clinical MRI:**  
   Quantify how slice thickness, acquisition dimensionality (2D vs. 3D), contrast enhancement, magnetic field strength (0.3T vs. 1.5T), and scanner site influence measurement error and pipeline failure probability:
   $$P(\text{failure}) = f(\text{SliceThickness}, \text{Contrast}, \text{FieldStrength}, \text{SNR})$$
-* **Aim 3 — Estimate Disease-Associated Macro-Structural Differences Under Acquisition Uncertainty:**  
+- **Aim 3 — Estimate Disease-Associated Macro-Structural Differences Under Acquisition Uncertainty:**  
   Deploy hierarchical Bayesian models to estimate partially pooled disease effects while explicitly modeling heteroskedastic slice-thickness noise and evaluating sensitivity to diagnosis–site–contrast confounding.
-* **Aim 4 — Define Practical Feasibility Boundaries for Opportunistic Neuroimaging:**  
+- **Aim 4 — Define Practical Feasibility Boundaries for Opportunistic Neuroimaging:**  
   Establish an evidence-based decision matrix for low- and middle-income country (LMIC) hospital archives, identifying which anatomical phenotypes and clinical acquisition regimes permit defensible quantitative analysis.
 
 ### 2.3 The A Priori Detectability Gradient
@@ -173,32 +175,33 @@ Rather than forcing uniform statistical expectations across divergent pathologie
 
 The standardized BIDS v1.10.0 dataset incorporates **$N = 218$ unique human subjects** extracted from Nigerian clinical archives and published open-access resources:
 
-| Diagnostic Cohort | BIDS Identifier Prefix | Total Scans ($N$) | Valid Volumetric ($N$) | Flagged Scouts ($N$) | Primary Clinical Phenotype |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| **Hydrocephalus** | `sub-hyd` | 82 | 82 | 0 | Severe ventricular enlargement, cortical thinning |
-| **Healthy Control** | `sub-con` | 63 | 62 | 1 | Age-appropriate parenchymal preservation |
-| **Dementia** | `sub-dem` | 45 | 40 | 5 | Diffuse cerebral atrophy, ventricular dilation |
-| **Parkinson's Disease** | `sub-pd` | 21 | 18 | 3 | Basal ganglia degeneration; preserved macro BPF |
-| **Epilepsy** | `sub-epi` | 7 | 7 | 0 | Seizure disorder; focal temporal asymmetry |
-| **Total** | | **218** | **209** | **9** | **Multi-cohort clinical spectrum** |
+| Diagnostic Cohort       | BIDS Identifier Prefix | Total Scans ($N$) | Valid Volumetric ($N$) | Flagged Scouts ($N$) | Primary Clinical Phenotype                        |
+| :---------------------- | :--------------------- | :---------------: | :--------------------: | :------------------: | :------------------------------------------------ |
+| **Hydrocephalus**       | `sub-hyd`              |        82         |           82           |          0           | Severe ventricular enlargement, cortical thinning |
+| **Healthy Control**     | `sub-con`              |        63         |           62           |          1           | Age-appropriate parenchymal preservation          |
+| **Dementia**            | `sub-dem`              |        45         |           40           |          5           | Diffuse cerebral atrophy, ventricular dilation    |
+| **Parkinson's Disease** | `sub-pd`               |        21         |           18           |          3           | Basal ganglia degeneration; preserved macro BPF   |
+| **Epilepsy**            | `sub-epi`              |         7         |           7            |          0           | Seizure disorder; focal temporal asymmetry        |
+| **Total**               |                        |      **218**      |        **209**         |        **9**         | **Multi-cohort clinical spectrum**                |
 
-*Provenance Breakdown:*
-* **Clinical Hospital Archives:** $N = 137$ subjects (RSUTH, UPTH, BMH, IDC, AKTH/NKDC).
-* **Brainlife Open Dataset:** $N = 81$ subjects (Wogu, Filima et al., *Scientific Data* 2025; [DOI: 10.1038/s41597-025-04743-0](https://doi.org/10.1038/s41597-025-04743-0)).
+_Provenance Breakdown:_
+
+- **Clinical Hospital Archives:** $N = 137$ subjects (RSUTH, UPTH, BMH, IDC, AKTH/NKDC).
+- **Brainlife Open Dataset:** $N = 81$ subjects (Wogu, Filima et al., _Scientific Data_ 2025; [DOI: 10.1038/s41597-025-04743-0](https://doi.org/10.1038/s41597-025-04743-0)).
 
 ### 3.2 Participating Clinical Centers & Hardware Profiles
 
 Scans originate from six clinical imaging centers spanning three Nigerian geopolitical zones (South-South, North-West, and North-Central):
 
-| Canonical Site ID | Hospital / Diagnostic Center | City / Zone | Scans ($N$) | Field ($B_0$) | Scanner Hardware & Model |
-| :--- | :--- | :--- | :---: | :---: | :--- |
-| `RSUTH` | Rivers State University Teaching Hospital | Port Harcourt (SS) | 85 | 1.5 T | GE Healthcare (SIGNA Creator) |
-| `UPTH` | University of Port Harcourt Teaching Hospital | Port Harcourt (SS) | 42 | 1.5 T | Siemens Healthineers (Magnetom) |
-| `IDC` | Intercontinental Diagnostic Centre | Port Harcourt (SS) | 38 | 0.3 T | Permanent low-field (*Vendor n/a in header*) |
-| `AKTH_NKDC` | Aminu Kano Teaching Hospital / NKDC | Kano (NW) | 21 | 1.5 T | Siemens Healthineers (Magnetom Essenza) |
-| `BMH` | Braithwaite Memorial Specialist Hospital | Port Harcourt (SS) | 16 | 1.5 T | GE Healthcare (Signa) |
-| `LifeBridge` | Life Bridge Medical Diagnostics Ltd | Abuja (NC) | 16 | 0.35 T / 1.5 T | Toshiba / Siemens Healthineers |
-| **Total** | **6 Hospital Sites** | **3 Zones** | **218** | **0.30T – 1.5T** | **GE, Siemens, Toshiba, Low-field** |
+| Canonical Site ID | Hospital / Diagnostic Center                  | City / Zone        | Scans ($N$) |  Field ($B_0$)   | Scanner Hardware & Model                     |
+| :---------------- | :-------------------------------------------- | :----------------- | :---------: | :--------------: | :------------------------------------------- |
+| `RSUTH`           | Rivers State University Teaching Hospital     | Port Harcourt (SS) |     85      |      1.5 T       | GE Healthcare (SIGNA Creator)                |
+| `UPTH`            | University of Port Harcourt Teaching Hospital | Port Harcourt (SS) |     42      |      1.5 T       | Siemens Healthineers (Magnetom)              |
+| `IDC`             | Intercontinental Diagnostic Centre            | Port Harcourt (SS) |     38      |      0.3 T       | Permanent low-field (_Vendor n/a in header_) |
+| `AKTH_NKDC`       | Aminu Kano Teaching Hospital / NKDC           | Kano (NW)          |     21      |      1.5 T       | Siemens Healthineers (Magnetom Essenza)      |
+| `BMH`             | Braithwaite Memorial Specialist Hospital      | Port Harcourt (SS) |     16      |      1.5 T       | GE Healthcare (Signa)                        |
+| `LifeBridge`      | Life Bridge Medical Diagnostics Ltd           | Abuja (NC)         |     16      |  0.35 T / 1.5 T  | Toshiba / Siemens Healthineers               |
+| **Total**         | **6 Hospital Sites**                          | **3 Zones**        |   **218**   | **0.30T – 1.5T** | **GE, Siemens, Toshiba, Low-field**          |
 
 > [!NOTE]
 > In raw DICOM headers, institution naming variants (`RSUTH` vs `RSUTH Port Harcourt`, `Life Bridge` vs `LIFEBRIDGE MEDICAL DIAGNOSTICS LTD`) were canonicalized into unique institutional entities. Manufacturer metadata for IDC is documented strictly as recorded (`n/a`) without unverified attribution.
@@ -224,13 +227,14 @@ The cross-tabulation of clinical diagnosis against acquisition parameters reveal
 ```
 
 #### The Identifiability Challenge:
+
 Notice that:
 $$\text{Site} \approx \text{Scanner} \approx \text{Field Strength}$$
 $$\text{Diagnosis} \approx \text{Site} \approx \text{Contrast Enhancement}$$
 
-* **Hydrocephalus** was predominantly imaged with intravenous contrast ($62/82$ scans) for surgical planning and etiology screening.
-* **Healthy Controls** were almost entirely unenhanced ($59/63$ scans).
-* **Epilepsy** scans were acquired exclusively at UPTH ($7/7$), mostly with high-resolution 1.0 mm 3D sequences and contrast enhancement.
+- **Hydrocephalus** was predominantly imaged with intravenous contrast ($62/82$ scans) for surgical planning and etiology screening.
+- **Healthy Controls** were almost entirely unenhanced ($59/63$ scans).
+- **Epilepsy** scans were acquired exclusively at UPTH ($7/7$), mostly with high-resolution 1.0 mm 3D sequences and contrast enhancement.
 
 **Methodological Implication:** No statistical algorithm—Bayesian or frequentist—can causally disentangle diagnosis from acquisition when they do not overlap in the design. Rather than pretending partial pooling eliminates this confounding, our framework explicitly models acquisition uncertainty and subjects every finding to sensitivity analyses.
 
@@ -269,13 +273,13 @@ $$\text{Diagnosis} \approx \text{Site} \approx \text{Contrast Enhancement}$$
 
 **Objective:** Directly test the hypothesis that coarse ventricular and macro-parenchymal metrics survive slice degradation, whereas subcortical and micro-morphometric segmentations collapse.
 
-* **Experimental Cohort:** $N = 35$ high-resolution 3D volumetric T1-weighted scans (1.0 mm isotropic) from UPTH and Brainlife.
-* **Degradation Operator:** Slices are synthetically downsampled and filtered along the slice-select axis to simulate routine 2D Fast Spin Echo acquisitions:
+- **Experimental Cohort:** $N = 35$ high-resolution 3D volumetric T1-weighted scans (1.0 mm isotropic) from UPTH and Brainlife.
+- **Degradation Operator:** Slices are synthetically downsampled and filtered along the slice-select axis to simulate routine 2D Fast Spin Echo acquisitions:
   $$I_{\text{degraded}}(z) = \left[ I_{\text{1mm}} * \text{SliceProfile}(h) \right] \downarrow_{h}, \quad h \in \{3.0, 4.0, 5.0, 6.0\text{ mm}\}$$
-* **Evaluated Metrics:**
-  * Coarse Macro-Morphometry: Evans' Index, Ventricle-to-Brain Ratio (VBR), Brain Parenchymal Fraction (BPF).
-  * Classical Micro-Morphometry: Fine subcortical structure volume proxy.
-* **Outcome Statistics:** Absolute Bias ($|M_h - M_{\text{1mm}}|$) and Relative Percentage Error ($\frac{|M_h - M_{\text{1mm}}|}{M_{\text{1mm}}} \times 100\%$).
+- **Evaluated Metrics:**
+  - Coarse Macro-Morphometry: Evans' Index, Ventricle-to-Brain Ratio (VBR), Brain Parenchymal Fraction (BPF).
+  - Classical Micro-Morphometry: Fine subcortical structure volume proxy.
+- **Outcome Statistics:** Absolute Bias ($|M_h - M_{\text{1mm}}|$) and Relative Percentage Error ($\frac{|M_h - M_{\text{1mm}}|}{M_{\text{1mm}}} \times 100\%$).
 
 #### Empirical Findings from Experiment 1 ($N=35$ Scans, 175 Trials):
 
@@ -292,9 +296,9 @@ Slice Thickness    Evans' Index (%)    BPF (%)            VBR (%)            Sub
 =====================================================================================
 ```
 
-* **Evans' Index is exceptionally resilient:** Frontal horn transverse width relative to inner skull diameter is measured in-plane and remains within **$<2.5\%$ relative error** even at 5.0 mm slice thickness.
-* **BPF shows stable global preservation:** Global parenchymal volume fraction drifts by only $\sim 6\%$.
-* **Subcortical micro-structures and VBR collapse:** Fine anatomical boundaries experience $>40-50\%$ volumetric measurement error under 5.0 mm clinical slice thickness, confirming why standard subcortical segmentation tools (FSL FIRST / FreeSurfer) fail catastrophically on clinical scans.
+- **Evans' Index is exceptionally resilient:** Frontal horn transverse width relative to inner skull diameter is measured in-plane and remains within **$<2.5\%$ relative error** even at 5.0 mm slice thickness.
+- **BPF shows stable global preservation:** Global parenchymal volume fraction drifts by only $\sim 6\%$.
+- **Subcortical micro-structures and VBR collapse:** Fine anatomical boundaries experience $>40-50\%$ volumetric measurement error under 5.0 mm clinical slice thickness, confirming why standard subcortical segmentation tools (FSL FIRST / FreeSurfer) fail catastrophically on clinical scans.
 
 ![Figure 1: Experiment 1 Degradation Error Curves](results/figures/figure1_synthetic_degradation_curves.png)
 
@@ -302,11 +306,11 @@ Slice Thickness    Evans' Index (%)    BPF (%)            VBR (%)            Sub
 
 **Objective:** Map where automated quantitative morphometry succeeds and where it fails across authentic clinical quality gradients.
 
-* **Scanned Space:** All $N = 218$ subjects across slice thicknesses from 1.0 mm to 10.0 mm, field strengths from 0.3T to 1.5T, and contrast states (+C vs. unenhanced).
-* **Failure Criteria:**
+- **Scanned Space:** All $N = 218$ subjects across slice thicknesses from 1.0 mm to 10.0 mm, field strengths from 0.3T to 1.5T, and contrast states (+C vs. unenhanced).
+- **Failure Criteria:**
   1. Biological boundary violations (e.g., $\text{BPF} \le 0$ or $\text{BPF} \ge 1.0$, negative ventricular volume).
   2. Severe partial volume misclassification (inversion of gray/white matter contrast).
-* **Failure Model:** Multivariate logistic regression predicting structural failure:
+- **Failure Model:** Multivariate logistic regression predicting structural failure:
   $$\text{logit}\left(P(\text{failure}_i)\right) = \beta_0 + \beta_1 \text{SliceThickness}_i + \beta_2 \text{Contrast}_i + \beta_3 \text{LowField}_i$$
 
 #### Empirical Findings from Experiment 2 ($N=218$ Real-World Scans):
@@ -337,12 +341,12 @@ Low Field (<=0.35T)     +7.88         2.31         2655 [28.7, 245893]       < 0
 
 **Objective:** Estimate partially pooled disease differences across the detectability gradient while acknowledging, modeling, and sensitivity-testing site-disease confounding.
 
-* **Flagship Positive Control:** Ventricular enlargement (Evans' Index and VBR) in Hydrocephalus.
-* **Neurodegenerative Target:** Parenchymal volume loss (BPF) in Dementia.
-* **Calibration Controls:** Parkinson's Disease (negative macro-structural control) and Epilepsy (exploratory asymmetry).
-* **Confounding Sensitivity Analyses:**
-  1. *Contrast Subsetting:* Re-fitting models restricted strictly to unenhanced scans ($N = 126$) to verify if disease signals persist without gadolinium bias.
-  2. *Site-Leave-One-Out:* Systematically dropping dominant centers (e.g., dropping RSUTH, $N = 127$ retained) to assess whether posterior group estimates remain stable.
+- **Flagship Positive Control:** Ventricular enlargement (Evans' Index and VBR) in Hydrocephalus.
+- **Neurodegenerative Target:** Parenchymal volume loss (BPF) in Dementia.
+- **Calibration Controls:** Parkinson's Disease (negative macro-structural control) and Epilepsy (exploratory asymmetry).
+- **Confounding Sensitivity Analyses:**
+  1. _Contrast Subsetting:_ Re-fitting models restricted strictly to unenhanced scans ($N = 126$) to verify if disease signals persist without gadolinium bias.
+  2. _Site-Leave-One-Out:_ Systematically dropping dominant centers (e.g., dropping RSUTH, $N = 127$ retained) to assess whether posterior group estimates remain stable.
 
 #### Empirical Model Benchmarking (Dementia Atrophy Detection - BPF):
 
@@ -372,14 +376,13 @@ Excl. RSUTH (N=127)       -0.0035 [-0.025, 0.002] +0.0003 [-0.011, 0.013] -0.003
 =====================================================================================
 ```
 
-* **Honest Posterior Shrinkage:** The Bayesian hierarchical prior shrinks noisy, underpowered diagnostic groups (e.g. Epilepsy, Parkinson's) toward the global baseline, preventing overconfident false discoveries that plague naive OLS.
-* **Variance Partitioning:** The model demonstrates that scanner hardware differences account for **59.4% of total variance** ($\text{ICC}_{\text{site}} = 0.594, 95\%\text{ CrI: } [0.334, 0.830]$) in ventricular Evans' Index, dwarfing unadjusted diagnostic differences.
-* **Sensitivity Stability:** When high-dose contrast scans are excluded or the largest site (RSUTH) is pruned, the directional effects remain consistent within their expanded credible intervals, demonstrating model stability without overclaiming causal separation.
+- **Honest Posterior Shrinkage:** The Bayesian hierarchical prior shrinks noisy, underpowered diagnostic groups (e.g. Epilepsy, Parkinson's) toward the global baseline, preventing overconfident false discoveries that plague naive OLS.
+- **Variance Partitioning:** The model demonstrates that scanner hardware differences account for **59.4% of total variance** ($\text{ICC}_{\text{site}} = 0.594, 95\%\text{ CrI: } [0.334, 0.830]$) in ventricular Evans' Index, dwarfing unadjusted diagnostic differences.
+- **Sensitivity Stability:** When high-dose contrast scans are excluded or the largest site (RSUTH) is pruned, the directional effects remain consistent within their expanded credible intervals, demonstrating model stability without overclaiming causal separation.
 
 ![Figure 3: Posterior Shrinkage Forest Plot](results/figures/figure3_posterior_shrinkage_forest.png)
 
 ![Figure 4: Variance Partitioning and Sensitivity Analysis](results/figures/figure4_variance_partitioning_sensitivity.png)
-
 
 ---
 
@@ -395,13 +398,13 @@ $$\mu_i = \alpha + \beta_{\text{diagnosis}[i]} + \gamma_{\text{site}[i]} + \delt
 
 $$\sigma_i = \sigma_0 \cdot \exp\left(\lambda \cdot \text{SliceThickness}_i\right)$$
 
-* $y_i$: Observed macro-morphometric biomarker (BPF, VBR, or Evans' Index).
-* $\alpha$: Global baseline reference level (Healthy Control, Unenhanced, Baseline site).
-* $\beta_k$: Clinical diagnostic group effect ($k \in \{\text{Control (ref=0)}, \text{Dementia}, \text{Hydrocephalus}, \text{Parkinson}, \text{Epilepsy}\}$).
-* $\gamma_j$: Hospital site random intercept ($j \in \{\text{RSUTH}, \text{UPTH}, \text{IDC}, \text{AKTH\_NKDC}, \text{BMH}, \text{LifeBridge}\}$).
-* $\delta$: Fixed effect adjusting for gadolinium contrast enhancement ($\text{Contrast}_i \in \{0, 1\}$).
-* $\sigma_0$: Baseline measurement noise for 1.0 mm isotropic reference scans.
-* $\lambda$: Heteroskedastic noise scaling coefficient ($\lambda > 0$ indicates that slice thickness statistically increases measurement uncertainty).
+- $y_i$: Observed macro-morphometric biomarker (BPF, VBR, or Evans' Index).
+- $\alpha$: Global baseline reference level (Healthy Control, Unenhanced, Baseline site).
+- $\beta_k$: Clinical diagnostic group effect ($k \in \{\text{Control (ref=0)}, \text{Dementia}, \text{Hydrocephalus}, \text{Parkinson}, \text{Epilepsy}\}$).
+- $\gamma_j$: Hospital site random intercept ($j \in \{\text{RSUTH}, \text{UPTH}, \text{IDC}, \text{AKTH\_NKDC}, \text{BMH}, \text{LifeBridge}\}$).
+- $\delta$: Fixed effect adjusting for gadolinium contrast enhancement ($\text{Contrast}_i \in \{0, 1\}$).
+- $\sigma_0$: Baseline measurement noise for 1.0 mm isotropic reference scans.
+- $\lambda$: Heteroskedastic noise scaling coefficient ($\lambda > 0$ indicates that slice thickness statistically increases measurement uncertainty).
 
 ### 5.2 Hierarchical Prior Structure
 
@@ -520,6 +523,7 @@ npx -y bids-validator /Volumes/MyHDD/bayesian-brain-morphometry/data/bids
 ### 7.4 Granular Step-by-Step Execution
 
 #### Step A: Macro-Morphometric Feature Extraction
+
 ```bash
 python features/extract_features.py \
     --bids_dir data/bids \
@@ -527,6 +531,7 @@ python features/extract_features.py \
 ```
 
 #### Step B: Hierarchical Bayesian MCMC Sampling
+
 ```bash
 # Brain Parenchymal Fraction (BPF)
 python modeling/inference.py --features_csv results/tables/macro_features.csv --target_metric bpf --draws 2000 --tune 1000 --chains 4
@@ -539,6 +544,7 @@ python modeling/inference.py --features_csv results/tables/macro_features.csv --
 ```
 
 #### Step C: Experiment 1 (Synthetic Degradation Lab)
+
 ```bash
 python features/synthetic_degradation.py \
     --bids_dir data/bids \
@@ -548,6 +554,7 @@ python features/synthetic_degradation.py \
 ```
 
 #### Step D: Experiment 2 (Clinical Feasibility Boundaries)
+
 ```bash
 python features/clinical_failure_boundaries.py \
     --features_csv results/tables/macro_features.csv \
@@ -556,6 +563,7 @@ python features/clinical_failure_boundaries.py \
 ```
 
 #### Step E: Experiment 3 (Sensitivity & Benchmarking)
+
 ```bash
 python modeling/sensitivity_analysis.py \
     --features_csv results/tables/macro_features.csv \
@@ -595,23 +603,28 @@ Evans' Index        0.1036 [0.038, 0.165]   +0.0055 [-0.014, 0.025] 59.4% [33.4%
 ## 9. Ethical Compliance & FAIR Data Stewardship
 
 ### 9.1 Ethical Oversight & Approvals
+
 Data collection and retrospective secondary analyses were reviewed and approved by Health Research Ethics Committees (HREC) and Institutional Review Boards across collaborating Nigerian centers:
-* Rivers State University Teaching Hospital (RSUTH), Port Harcourt, Nigeria.
-* University of Port Harcourt Teaching Hospital (UPTH), Port Harcourt, Nigeria.
-* Braithwaite Memorial Specialist Hospital (BMH), Port Harcourt, Nigeria.
-* Intercontinental Diagnostic Centre (IDC), Port Harcourt, Nigeria.
+
+- Rivers State University Teaching Hospital (RSUTH), Port Harcourt, Nigeria.
+- University of Port Harcourt Teaching Hospital (UPTH), Port Harcourt, Nigeria.
+- Braithwaite Memorial Specialist Hospital (BMH), Port Harcourt, Nigeria.
+- Intercontinental Diagnostic Centre (IDC), Port Harcourt, Nigeria.
 
 ### 9.2 De-Identification & HIPAA / GDPR Compliance
+
 All images were anonymized in compliance with HIPAA Safe Harbor and GDPR standards:
-* Patient names, medical record numbers, dates of birth, and exact scan times were removed from DICOM headers.
-* Pseudonymous BIDS identifiers (`sub-<cohort><id>`) were assigned via cryptographically secure lookup keys stored in offline clinical vaults.
-* Facial features are stripped during defacing to prevent 3D photographic re-identification.
+
+- Patient names, medical record numbers, dates of birth, and exact scan times were removed from DICOM headers.
+- Pseudonymous BIDS identifiers (`sub-<cohort><id>`) were assigned via cryptographically secure lookup keys stored in offline clinical vaults.
+- Facial features are stripped during defacing to prevent 3D photographic re-identification.
 
 ### 9.3 FAIR Data Principles
-* **Findable:** Permanent DOIs and standardized BIDS v1.10.0 schema.
-* **Accessible:** Open-source analysis code and pre-computed macro-morphometry tables.
-* **Interoperable:** Standard NIfTI-1 formats with JSON metadata sidecars.
-* **Reusable:** Permissively licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+- **Findable:** Permanent DOIs and standardized BIDS v1.10.0 schema.
+- **Accessible:** Open-source analysis code and pre-computed macro-morphometry tables.
+- **Interoperable:** Standard NIfTI-1 formats with JSON metadata sidecars.
+- **Reusable:** Permissively licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
 
 ---
 
@@ -621,7 +634,7 @@ If you utilize this methodological framework, codebase, or data architecture, pl
 
 ```bibtex
 @article{filima2026whatsurvives,
-  title   = {What Survives the Blur? Macro-Brain Morphometry and Uncertainty 
+  title   = {What Survives the Blur? Macro-Brain Morphometry and Uncertainty
              Quantification from Heterogeneous Routine Clinical MRI in Nigeria},
   author  = {Filima, Patrick and {African Brain Data Network Collaborators}},
   journal = {In Preparation},
@@ -641,7 +654,9 @@ If you utilize this methodological framework, codebase, or data architecture, pl
 ```
 
 ### Acknowledgments
+
 This research is conducted under the **African Brain Data Network (ABDN)**. We express our gratitude to the radiologists, radiographers, clinical neurologists, and administrative staff at RSUTH, UPTH, BMH, IDC, AKTH/NKDC, and Life Bridge Diagnostic Centre whose dedication to archiving and preserving real-world African neuroimaging data made this investigation possible.
 
 ---
-*Maintained by Patrick Filima ([@filimapatrick](https://github.com/filimapatrick)) • African Brain Data Network (ABDN)*
+
+_Maintained by Patrick Filima ([@filimapatrick](https://github.com/filimapatrick)) • African Brain Data Network (ABDN)_
