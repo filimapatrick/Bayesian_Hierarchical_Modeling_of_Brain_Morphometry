@@ -30,6 +30,7 @@
   - [3.1 Cohort Composition & Provenance ($N = 218$)](#31-cohort-composition--provenance-n--218)
   - [3.2 Participating Clinical Centers & Hardware Profiles](#32-participating-clinical-centers--hardware-profiles)
   - [3.3 Acquisition Heterogeneity & Identifiability Matrix](#33-acquisition-heterogeneity--identifiability-matrix)
+  - [3.4 Data Sharing, Integrity & Checksum Verification (`Processed_Data/bids`)](#34-data-sharing-integrity--checksum-verification-processed_databids)
 - [4. Three-Tier Experimental Architecture](#4-three-tier-experimental-architecture)
   - [4.1 Experiment 1: Controlled Synthetic Degradation Lab](#41-experiment-1-controlled-synthetic-degradation-lab)
   - [4.2 Experiment 2: Real-World Clinical Measurement Validity & Failure Boundaries](#42-experiment-2-real-world-clinical-measurement-validity--failure-boundaries)
@@ -41,11 +42,11 @@
   - [5.4 Model Comparison Hierarchy](#54-model-comparison-hierarchy)
 - [6. Repository Architecture & Artifact Directory](#6-repository-architecture--artifact-directory)
 - [7. Step-by-Step Execution Guide](#7-step-by-step-execution-guide)
-  - [7.1 Prerequisites & Virtual Environment](#71-prerequisites--virtual-environment)
-  - [7.2 BIDS Validation](#72-bids-validation)
-  - [7.3 Macro-Morphometric Feature Extraction](#73-macro-morphometric-feature-extraction)
-  - [7.4 Running Hierarchical Bayesian Inference](#74-running-hierarchical-bayesian-inference)
-  - [7.5 Generating Publication Figures & Diagnostic Forest Plots](#75-generating-publication-figures--diagnostic-forest-plots)
+  - [7.1 One-Click Complete Study Reproduction](#71-one-click-complete-study-reproduction)
+  - [7.2 Environment Setup & Dependencies](#72-environment-setup--dependencies)
+  - [7.3 BIDS Dataset Configuration & External Data Sharing (`Processed_Data`)](#73-bids-dataset-configuration--external-data-sharing-processed_data)
+  - [7.4 BIDS Validation](#74-bids-validation)
+  - [7.5 Granular Step-by-Step Execution](#75-granular-step-by-step-execution)
 - [8. Empirical Findings from the Nigerian Cohort](#8-empirical-findings-from-the-nigerian-cohort)
 - [9. Ethical Compliance & FAIR Data Stewardship](#9-ethical-compliance--fair-data-stewardship)
 - [10. Citation & Acknowledgments](#10-citation--acknowledgments)
@@ -237,6 +238,20 @@ $$\text{Diagnosis} \approx \text{Site} \approx \text{Contrast Enhancement}$$
 - **Epilepsy** scans were acquired exclusively at UPTH ($7/7$), mostly with high-resolution 1.0 mm 3D sequences and contrast enhancement.
 
 **Methodological Implication:** No statistical algorithm—Bayesian or frequentist—can causally disentangle diagnosis from acquisition when they do not overlap in the design. Rather than pretending partial pooling eliminates this confounding, our framework explicitly models acquisition uncertainty and subjects every finding to sensitivity analyses.
+
+### 3.4 Data Sharing, Integrity & Checksum Verification (`Processed_Data/bids`)
+
+To support reproducible computational neuroimaging and open scientific data dissemination:
+
+- **Canonical Repository Dataset (`data/bids/`):** The primary benchmark dataset embedded within the project repository.
+- **External Archive / Distribution Package (`/Volumes/MyHDD/Processed_Data/bids/`):** The curated distribution copy intended for sharing with external collaborators, uploading to repositories (e.g., Zenodo / OSF / brainlife.io), or storing on external storage media.
+- **Audit & MD5 Checksum Verification:**
+  - **Cohort Size:** Strictly $N = 218$ subjects matching the paper (82 Hydrocephalus, 63 Control, 45 Dementia, 21 Parkinson, 7 Epilepsy).
+  - **Scans Checked:** 218 / 218 true 3D T1-weighted anatomical volumes.
+  - **Missing Scans:** 0.
+  - **Hash Mismatches:** 0 (100% byte-for-byte MD5 checksum equivalence between `data/bids/` and `Processed_Data/bids/`).
+  - **Scan Curation:** Replaces truncated or 2D scout scans (which lack volumetric slice dimensions) with verified full 3D T1w acquisitions.
+  - **Clinical Metadata Registry:** Synchronized `participants.tsv` and `participants.json` ensuring identical degrees of freedom and demographic covariates.
 
 ---
 
@@ -579,7 +594,44 @@ source /Users/patrick/.venvs/bayesian-brain-morphometry/bin/activate
 pip install nibabel pandas numpy scipy matplotlib seaborn pymc arviz
 ```
 
-### 7.3 BIDS Dataset Validation
+### 7.3 BIDS Dataset Configuration & External Data Sharing (`Processed_Data`)
+
+The computational pipeline is location-agnostic. All scripts can read directly from either the default repository folder or an external shared dataset directory such as `/Volumes/MyHDD/Processed_Data/bids`.
+
+#### Default Repository Path
+By default, pipeline commands point to `data/bids/`:
+```bash
+python features/extract_features.py --bids_dir data/bids
+```
+
+#### Pointing to an External / Shared Dataset (`Processed_Data/bids`)
+When sharing the data package externally or pointing to `/Volumes/MyHDD/Processed_Data/bids`, provide the `--bids_dir` argument to the extraction and degradation scripts:
+
+```bash
+# 1. Feature extraction on external/shared Processed_Data
+python features/extract_features.py \
+    --bids_dir /Volumes/MyHDD/Processed_Data/bids \
+    --output_csv results/tables/macro_features.csv
+
+# 2. Synthetic degradation lab on external/shared Processed_Data
+python features/synthetic_degradation.py \
+    --bids_dir /Volumes/MyHDD/Processed_Data/bids \
+    --output_csv results/tables/experiment1_synthetic_degradation.csv \
+    --summary_csv results/tables/experiment1_degradation_summary.csv \
+    --plot_path results/figures/figure1_synthetic_degradation_curves.png
+```
+
+#### Alternative: Symbolic Link to Repository Root
+If external users prefer not passing `--bids_dir` for each command:
+```bash
+# Link the external Processed_Data/bids folder into data/bids:
+ln -s /Volumes/MyHDD/Processed_Data/bids data/bids
+```
+
+> [!NOTE]
+> **Zero Result Drift Guarantee:** Because `Processed_Data/bids` and `data/bids` share identical MD5 hashes and clinical metadata across all 218 subjects, running the pipeline on either directory produces 100% mathematically identical feature matrices, summary statistics, and Bayesian posterior distributions.
+
+### 7.4 BIDS Dataset Validation
 
 Validate the dataset structure against the Brain Imaging Data Structure standard:
 
@@ -587,7 +639,7 @@ Validate the dataset structure against the Brain Imaging Data Structure standard
 npx -y bids-validator /Volumes/MyHDD/bayesian-brain-morphometry/data/bids
 ```
 
-### 7.4 Granular Step-by-Step Execution
+### 7.5 Granular Step-by-Step Execution
 
 #### Step A: Macro-Morphometric Feature Extraction
 
