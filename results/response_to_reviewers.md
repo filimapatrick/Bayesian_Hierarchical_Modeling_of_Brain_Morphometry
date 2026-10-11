@@ -82,7 +82,7 @@ We thoroughly scrubbed all claims that Bayesian models "prevent technical varian
 
 **Author Response:**  
 We elevated **Evans' Index** to be the primary flagship positive-control biomarker throughout the entire paper. In Experiment 1, we proved the physical foundation for this choice:
-* Because Evans' Index is measured within the 2D transverse plane ($D_{\text{frontal\_horns}} / D_{\text{inner\_skull}}$), it is topologically immune to through-plane slice-select blur, exhibiting **$< 2.5\%$ relative error** across all resolutions up to 5.0 mm.
+* Because Evans' Index is measured within the 2D transverse plane ($D_{\text{frontal horns}} / D_{\text{inner skull}}$), it is topologically immune to through-plane slice-select blur, exhibiting **$< 2.5\%$ relative error** across all resolutions up to 5.0 mm.
 * BPF was maintained as a secondary global parenchymal metric ($6.06\%$ error), while 3D subcortical micro-morphometry was shown to collapse ($> 45\%$ error).
 
 * **Where addressed in manuscript:** Section 1 (Hypothesis 1), Section 2.3, Section 3.1 (Table 2), and Section 4.1.

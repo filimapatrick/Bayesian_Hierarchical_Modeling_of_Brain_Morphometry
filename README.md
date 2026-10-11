@@ -468,7 +468,7 @@ $$\sigma_i = \sigma_0 \cdot \exp\left(\lambda \cdot [h_i - 1.0]\right)$$
 - $y_i$: Observed macro-morphometric biomarker (PEF, VBR, or Evans' Index).
 - $\alpha$: Global baseline reference level (Healthy Control, Unenhanced, Baseline site).
 - $\beta_k$: Clinical diagnostic group effect ($k \in \{\text{Control (ref=0)}, \text{Dementia}, \text{Hydrocephalus}, \text{Parkinson}, \text{Epilepsy}\}$).
-- $\gamma_j$: Hospital site random intercept ($j \in \{\text{RSUTH}, \text{UPTH}, \text{IDC}, \text{AKTH\_NKDC}, \text{BMH}, \text{LifeBridge}\}$).
+- $\gamma_j$: Hospital site random intercept ($j \in \{\text{RSUTH}, \text{UPTH}, \text{IDC}, \text{AKTH-NKDC}, \text{BMH}, \text{LifeBridge}\}$).
 - $\delta$: Fixed effect adjusting for gadolinium contrast enhancement ($\text{Contrast}_i \in \{0, 1\}$).
 - $\sigma_0$: Baseline measurement noise for 1.0 mm isotropic reference scans.
 - $\lambda$: Heteroskedastic noise scaling coefficient ($\lambda > 0$ indicates that slice thickness statistically increases measurement uncertainty).
