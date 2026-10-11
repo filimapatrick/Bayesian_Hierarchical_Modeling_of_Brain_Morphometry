@@ -171,37 +171,8 @@ $$HAI = \frac{|V_L - V_R|}{V_L + V_R} \times 100\%$$
 
 To draw valid population-level inferences from observational clinical data, we formulate a generative Bayesian hierarchical model that explicitly incorporates heteroskedastic measurement noise, scanner site clustering, and gadolinium contrast shifts.
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                 GENERATIVE DIRECTED ACYCLIC GRAPH (DAG) OF BAYESIAN MODEL               │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                        │
-│   [ Hyperpriors ]                                                                      │
-│        τ_β ~ Half-Normal(0, 0.05)         τ_γ ~ Half-Normal(0, 0.05)                    │
-│                 │                                  │                                   │
-│                 ▼                                  ▼                                   │
-│   [ Non-Centered Parameters ]                                                          │
-│        β_d = τ_β · z_β                     γ_s = τ_γ · z_γ                             │
-│        z_β ~ Normal(0, 1)                  z_γ ~ Normal(0, 1)                          │
-│        (Disease Effect)                    (Site Random Intercept)                     │
-│                 │                                  │                                   │
-│                 └──────────────┬───────────────────┘                                   │
-│                                │                                                       │
-│                                ▼                                                       │
-│   [ Linear Predictor ]                                                                 │
-│        μ_i = α + β_{diagnosis[i]} + γ_{site[i]} + δ · Contrast_i                       │
-│                                │                                                       │
-│                                ▼                                                       │
-│   [ Likelihood ]                                                                       │
-│        y_i ~ Normal( μ_i,  σ_i² )                                                      │
-│                                ▲                                                       │
-│                                │                                                       │
-│   [ Heteroskedastic Dispersion ]                                                       │
-│        σ_i = σ_0 · exp( λ · [SliceThickness_i - 1.0] )                                 │
-│        σ_0 ~ Half-Normal(0, 0.05)         λ ~ Normal(0, 0.15)                          │
-│                                                                                        │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
+![Figure: Generative Directed Acyclic Graph (DAG) of the Bayesian Hierarchical Framework](../results/figures/figure_dag_model.png)
+*Figure: Generative Directed Acyclic Graph (DAG) of the Bayesian Hierarchical Framework. The model hierarchically estimates disease-specific morphometric deviations $\beta_d$ and inter-scanner baseline offsets $\gamma_s$ using non-centered parameterizations, while incorporating an explicit gadolinium contrast shift $\delta$ and an exponential heteroskedastic dispersion model $\sigma_i$ that scales measurement error variance as a function of clinical slice thickness.*
 
 #### Mathematical Specification
 
